@@ -12,6 +12,8 @@
     <string name="actions">Actions</string>
     <string name="action_reload">Show</string>
     <string name="action_string">Set message</string>
+    <string name="action_tts">Enable TTS</string>
+    <string name="action_tts_desc">Enable text to speech</string>
     <string name="maxlength">Max Length</string>
     
     <string-array name="metadata_fields">

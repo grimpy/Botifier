@@ -9,6 +9,10 @@
             android:title="@string/action_string"
             android:key="action_message"
             />
+        <CheckBoxPreference android:title="@string/action_tts"
+            android:key="action_tts"
+            android:summary="@string/action_tts_desc"
+            android:defaultValue="false" />
 	</PreferenceCategory>
     
     <PreferenceCategory android:title="@string/metadata_display">

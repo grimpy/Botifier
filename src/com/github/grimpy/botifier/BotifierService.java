@@ -25,6 +25,8 @@ import android.media.RemoteControlClient;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.RemoteControlClient.MetadataEditor;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,7 +39,7 @@ import android.widget.TextView;
 import android.view.KeyEvent;
 
 
-public class BotifierService extends AccessibilityService {
+public class BotifierService extends AccessibilityService implements OnInitListener {
 
 	public static final String SERVICECMD = "com.github.grimpy.botifier.cmd";
 	public static final String NOTIFICATION = "com.github.grimpy.botifier.notification";
@@ -55,6 +57,7 @@ public class BotifierService extends AccessibilityService {
 	private NotificationManager mNM;
 	private LayoutInflater mInflater;
 	private int mAudiofocus = -1;
+	private TextToSpeech mTTS;
 
 
 
@@ -221,6 +224,9 @@ public class BotifierService extends AccessibilityService {
 	
 	public void showNotify(String artist, String album, String title, int tracknr) {
         getAudioFocus();
+        if (mSharedPref.getBoolean("action_tts", false)) {
+        	mTTS.speak(title, TextToSpeech.QUEUE_ADD, null);
+        }
 		mRemoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
 		MetadataEditor edit = mRemoteControlClient.editMetadata(true);
 		edit.putString(MediaMetadataRetriever.METADATA_KEY_TITLE, title);
@@ -346,7 +352,8 @@ public class BotifierService extends AccessibilityService {
     
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
-		if (event.getPackageName().equals("com.github.grimpy.btnotifier")) {
+		String packageName = event.getPackageName().toString();
+		if (packageName.equals("com.github.grimpy.btnotifier") || !mAudioManager.isBluetoothA2dpOn() ) {
 			return;
 		}
 		
@@ -360,7 +367,6 @@ public class BotifierService extends AccessibilityService {
 				return;
 			}
 
-			String packageName = event.getPackageName().toString();
 			String appname = getPackageLabel(packageName);
 			Log.d(TAG, String.format("Received event package=%s text: %s notdesc=%s action=%d type=%s data=%s",
 					appname,
@@ -432,6 +438,7 @@ public class BotifierService extends AccessibilityService {
 		
 		mPackageManager = getApplicationContext().getPackageManager();
 		mNotifications = new ArrayList<BotifierService.Notifies>();
+		mTTS = new TextToSpeech(this, this);
 		
         final IntentFilter filter = new IntentFilter();
         filter.addAction(SERVICECMD);
@@ -450,6 +457,12 @@ public class BotifierService extends AccessibilityService {
 		mAudiofocus = -1;
 		mAudioManager.abandonAudioFocus(mAudioFocusListener);
 	    isInit = false;
+	}
+
+	@Override
+	public void onInit(int status) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

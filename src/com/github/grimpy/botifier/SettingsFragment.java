@@ -54,7 +54,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		if (key.equals("blacklistentries")) {
+		if (key.equals("action_tts") || key.equals("blacklistentries")) {
 			return;
 		}
 		String msg = sharedPreferences.getString(key, "");
