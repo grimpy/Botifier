@@ -34,9 +34,11 @@ public class BlackListFragment extends PreferenceFragment {
 		setHasOptionsMenu(true);
 		addPreferencesFromResource(R.xml.blacklist_preference);
 		mBlackList = (PreferenceCategory) findPreference("blacklist");
-		mBlackListEntries = new HashSet<String>(mSharedPref.getStringSet("blacklistentries", null));
-		if (mBlackListEntries == null) {
+		Set<String> entries = mSharedPref.getStringSet("blacklistentries", null);
+		if (entries == null) {
 			mBlackListEntries = new HashSet<String>();
+		} else {
+			mBlackListEntries = new HashSet<String>(entries);
 		}
 		for (String blackitem : mBlackListEntries) {
 			Preference test = new Preference(getActivity());
