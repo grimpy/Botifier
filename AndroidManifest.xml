@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.github.grimpy.botifier"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="18"
+        android:targetSdkVersion="18" />
+	<uses-permission android:name="android.permission.BROADCAST_STICKY" />
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="com.github.grimpy.botifier.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>        
+        <service android:name="com.github.grimpy.botifier.BotifierService"
+         		 android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+     		<intent-filter>
+         		<action android:name="android.accessibilityservice.AccessibilityService" />
+     		</intent-filter>
+     		<intent-filter>
+     		    <action android:name="com.github.grimpy.btnotifier.cmd" />
+     		    <action android:name="com.github.grimpy.btnotifier.notification" />
+     		    <category android:name="android.intent.category.DEFAULT" />
+     		</intent-filter>
+ 		</service>
+ 		<receiver android:name="com.github.grimpy.botifier.MediaButtonIntentReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

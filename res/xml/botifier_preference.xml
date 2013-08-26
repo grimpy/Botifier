@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory android:title="@string/actions">
+        <Preference android:title="@string/action_reload"
+            		android:key="action_reload"
+            />
+        <EditTextPreference android:dialogTitle="@string/action_string" 
+            android:dialogMessage="@string/action_string" 
+            android:title="@string/action_string"
+            android:key="action_message"
+            />
+	</PreferenceCategory>
+    
+    <PreferenceCategory android:title="@string/metadata_display">
+	    <ListPreference android:entries="@array/metadata_fields"
+	        			android:key="metadata_artist"
+	                    android:entryValues="@array/metadata_fields_values" 
+	                    android:dialogTitle="@string/metadata_artist" android:title="@string/metadata_artist"/>
+	    <ListPreference android:entries="@array/metadata_fields"
+	        			android:key="metadata_album" 
+	                    android:entryValues="@array/metadata_fields_values" 
+	                    android:dialogTitle="@string/metadata_album" android:title="@string/metadata_album"/>
+	    <ListPreference android:entries="@array/metadata_fields"
+	        			android:key="metadata_title" 
+	                    android:entryValues="@array/metadata_fields_values" 
+	                    android:dialogTitle="@string/metadata_title" android:title="@string/metadata_title"/>
+	    <EditTextPreference android:numeric="integer"
+	        			android:key="maxlength"
+	        			android:dialogTitle="@string/maxlength"
+	        			android:title="@string/maxlength"/>
+	        
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/filters">
+    	<Preference android:title="@string/blacklist" android:key="blacklist"/>
+    </PreferenceCategory>
+    
+</PreferenceScreen>
