@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <PreferenceCategory android:title="@string/actions">
-        <Preference android:title="@string/action_reload"
-            		android:key="action_reload"
-            />
-        <EditTextPreference android:dialogTitle="@string/action_string" 
-            android:dialogMessage="@string/action_string" 
-            android:title="@string/action_string"
-            android:key="action_message"
-            />
         <CheckBoxPreference android:title="@string/action_tts"
             android:key="action_tts"
             android:summary="@string/action_tts_desc"
@@ -18,15 +10,18 @@
     <PreferenceCategory android:title="@string/metadata_display">
 	    <ListPreference android:entries="@array/metadata_fields"
 	        			android:key="metadata_artist"
-	                    android:entryValues="@array/metadata_fields_values" 
+	                    android:entryValues="@array/metadata_fields_values"
+	                    android:defaultValue="%a"
 	                    android:dialogTitle="@string/metadata_artist" android:title="@string/metadata_artist"/>
 	    <ListPreference android:entries="@array/metadata_fields"
 	        			android:key="metadata_album" 
-	                    android:entryValues="@array/metadata_fields_values" 
+	                    android:entryValues="@array/metadata_fields_values"
+	                    android:defaultValue="%d" 
 	                    android:dialogTitle="@string/metadata_album" android:title="@string/metadata_album"/>
 	    <ListPreference android:entries="@array/metadata_fields"
 	        			android:key="metadata_title" 
-	                    android:entryValues="@array/metadata_fields_values" 
+	                    android:entryValues="@array/metadata_fields_values"
+	                    android:defaultValue="%m" 
 	                    android:dialogTitle="@string/metadata_title" android:title="@string/metadata_title"/>
 	    <EditTextPreference android:numeric="integer"
 	        			android:key="maxlength"
@@ -36,6 +31,12 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/filters">
     	<Preference android:title="@string/blacklist" android:key="blacklist"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/debug">
+        <Preference android:title="@string/action_makenotification"
+          		android:key="action_makenotification"
+        />
+        
     </PreferenceCategory>
     
 </PreferenceScreen>

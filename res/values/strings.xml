@@ -15,20 +15,24 @@
     <string name="action_tts">Enable TTS</string>
     <string name="action_tts_desc">Enable text to speech</string>
     <string name="maxlength">Max Length</string>
+    <string name="debug">Debug</string>
+    <string name="action_makenotification">Test Notification</string>
+    <string name="custom_title">Enter custom text</string>
+    <string name="ok">Ok</string>
     
     <string-array name="metadata_fields">
-        <item >All</item>
-        <item >Application Name</item>
-        <item >Notification message</item>
-        <item >Notification description</item>
+        <item >All (%f)</item>
+        <item >Application Name (%a)</item>
+        <item >Notification message (%m)</item>
+        <item >Notification description (%d)</item>
         <item >Custom</item>
     </string-array>
     
    <string-array name="metadata_fields_values">
-        <item >all</item>
-        <item >appname</item>
-        <item >message</item>
-        <item >description</item>
+        <item >%f</item>
+        <item >%a</item>
+        <item >%m</item>
+        <item >%d</item>
         <item >custom</item> 
    </string-array>
 

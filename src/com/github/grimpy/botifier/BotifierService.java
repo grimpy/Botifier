@@ -1,14 +1,10 @@
 package com.github.grimpy.botifier;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import android.accessibilityservice.AccessibilityService;
-import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -25,6 +21,8 @@ import android.media.RemoteControlClient;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.RemoteControlClient.MetadataEditor;
 import android.preference.PreferenceManager;
+import android.service.notification.NotificationListenerService;
+import android.service.notification.StatusBarNotification;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.text.TextUtils;
@@ -32,17 +30,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.accessibility.AccessibilityEvent;
-import android.widget.ImageView;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.view.KeyEvent;
 
 
-public class BotifierService extends AccessibilityService implements OnInitListener {
+public class BotifierService extends NotificationListenerService implements OnInitListener {
 
 	public static final String SERVICECMD = "com.github.grimpy.botifier.cmd";
 	public static final String NOTIFICATION = "com.github.grimpy.botifier.notification";
+	public static final String CMD_NOTIFICATION_ADDED = "com.github.grimpy.botifier.notification.added";
+	public static final String CMD_NOTIFICATION_REMOVED = "com.github.grimpy.botifier.notification.removed"; 
+	
 	private static final int TIMESTAMPID = 16908388;
 	private boolean isInit = false;
 	private static String TAG = "Botifier";
@@ -53,8 +52,7 @@ public class BotifierService extends AccessibilityService implements OnInitListe
 	private ComponentName mMediaButtonReceiverComponent;
 	private PackageManager mPackageManager;
 	private ArrayList<Notifies> mNotifications;
-	private Notifies mCurrent;
-	private NotificationManager mNM;
+	private int mCurrent = -1;
 	private LayoutInflater mInflater;
 	private int mAudiofocus = -1;
 	private TextToSpeech mTTS;
@@ -64,22 +62,16 @@ public class BotifierService extends AccessibilityService implements OnInitListe
 	class Notifies {
 		public String mPackageName;
 		public String mPackageLabel;
-		public ArrayList<String> mDescription;
+		public String mDescription;
 		public String mText;
-		public Notification mNotification;
+		public StatusBarNotification mNotification;
 		public int mOffset;
-		public Notifies(String packageName, String packageLabel, ArrayList<String> text, List<CharSequence> description, Notification notification) {
+		public Notifies(String packageName, String packageLabel, ArrayList<String> text, StatusBarNotification notification) {
 			mPackageLabel = packageLabel;
 			mPackageName = packageName;
-			mDescription = new ArrayList<String>();
+			mDescription = notification.getNotification().tickerText.toString();
 			mText = TextUtils.join("\n", text);
 
-			for (int i = 0; i < description.size(); i++) {
-				CharSequence chr = description.get(i);
-				if (chr != null) {
-					mDescription.add(chr.toString());
-				}
-			}
 			mNotification = notification;
 			mOffset = 0;
 		}
@@ -93,29 +85,25 @@ public class BotifierService extends AccessibilityService implements OnInitListe
 		}
 		
 		public String getPreference(String key) {
-			String type = mSharedPref.getString(key, "");
+			String message = mSharedPref.getString(key, "");
 			int maxlength = Integer.valueOf(mSharedPref.getString("maxlength", "0"));
-			if (type.equals("all")) {
-				return toString();
-			} else if (type.equals("appname")) {
-				return mPackageLabel;
-			} else if (type.equals("message")) {
-				if (maxlength != 0 && mText.length() > maxlength) {
-					int start = mOffset * maxlength;
-					int end = start + maxlength;
-					if (end >= mText.length()) {
-						end = mText.length() -1;
-						mOffset = -1;
-					}
-					String result = mText.substring(start, end);
-					mOffset++;
-					return result;
+			message = message.replace("%f", toString());
+			message = message.replace("%a", mPackageLabel);
+			message = message.replace("%d", mDescription);
+			message = message.replace("%m", mText);
+			
+			if (maxlength != 0 && message.length() > maxlength) {
+				int start = mOffset * maxlength;
+				int end = start + maxlength;
+				if (end >= message.length()) {
+					end = message.length() -1;
+					mOffset = -1;
 				}
-				return mText;
-			} else if (type.equals("description")) {
-				return TextUtils.join("\n", mDescription);
+				String result = message.substring(start, end);
+				mOffset++;
+				return result;
 			}
-			return "CUSTOM";
+			return message;
 		}
 		
 		public String toString() {
@@ -129,7 +117,8 @@ public class BotifierService extends AccessibilityService implements OnInitListe
          */
         @Override
         public void onReceive(final Context context, final Intent intent) {
-        	if (intent.getAction() == SERVICECMD ) {
+        	Log.d(TAG, "Received action " + intent.getAction());
+        	if (intent.getAction().equals(SERVICECMD) ) {
 	        	int keycode = intent.getIntExtra(SERVICECMD, 0);
 	        	Log.d(TAG, "Recieved key" + keycode);
 	            switch (keycode) {
@@ -147,30 +136,37 @@ public class BotifierService extends AccessibilityService implements OnInitListe
 		            	showNotify(-1);
 		                break;
 	            }
-        	} else {
+        	} else if (intent.getAction().equals(NOTIFICATION)) {
         		String album = intent.getStringExtra("album");
         		String artist = intent.getStringExtra("artist");
         		String title = intent.getStringExtra("title");
 
         		showNotify(album, artist, title, 10);
+        	} else if (intent.getAction().equals(CMD_NOTIFICATION_ADDED)) {
+        		notificationAdded((StatusBarNotification) intent.getParcelableExtra("notification"));
         	}
         }
     };
     
+    public boolean isActive() {
+    	return mAudioManager.isBluetoothA2dpOn() || true;
+    }
+    
     private void removeNotification() {
-    	if (mCurrent == null) {
+    	if (mCurrent == -1 || mCurrent > mNotifications.size() -1) {
     		resetNotify();
     		return;
     	}
     	Log.d(TAG, "Remove current notification: " + mCurrent);
-    	Notifies old = mCurrent;
-    	showNotify(1, true);
+    	Notifies old = mNotifications.get(mCurrent);
+    	cancelNotification(old.mNotification.getPackageName(), old.mNotification.getTag(), old.mNotification.getId());
     	mNotifications.remove(old);
     	if (mNotifications.size() == 0) {
-    		mCurrent = null;
+    		mCurrent = -1;
     		resetNotify();
     		return;
     	}
+    	showNotify(0, true);
 
     }
     
@@ -187,10 +183,10 @@ public class BotifierService extends AccessibilityService implements OnInitListe
     
     private void showNotify(int offset, boolean next) {
     	if (mNotifications.size() == 0) {
-    		mCurrent = null;
+    		mCurrent = -1;
     		return;
     	}
-    	int idx = mNotifications.indexOf(mCurrent) + offset;
+    	int idx = mCurrent + offset;
     	Log.d(TAG, "Move notification with offset " + offset + " currnetidx: " + idx);
     	
     	if (idx >= mNotifications.size()) {
@@ -199,10 +195,11 @@ public class BotifierService extends AccessibilityService implements OnInitListe
     		idx = mNotifications.size() -1;
     	}
     	Log.d(TAG, "Move new idx " + idx + " size: " + mNotifications.size());
-    	if (next || ( offset > 0 && mCurrent != null && !mCurrent.hasNext())) {
+    	Notifies current = mNotifications.get(mCurrent);
+    	if (next || ( offset > 0 && mCurrent != -1 && !current.hasNext())) {
     		showNotify(mNotifications.get(idx));
     	} else {
-    		showNotify(mCurrent);
+    		showNotify(current);
     	}
     	
     }
@@ -215,19 +212,19 @@ public class BotifierService extends AccessibilityService implements OnInitListe
 	
 	public void showNotify(Notifies notify) {
 		Log.d(TAG, "Setting notification " + notify.toString());
-		mCurrent = notify;
-		if (mAudioManager.isBluetoothA2dpOn()) {
+		mCurrent = mNotifications.indexOf(notify);
+		if (isActive()) {
 			Log.d(TAG, "Setting Metadata");
-	        showNotify(notify.getPreference("metadata_artist"), notify.getPreference("metadata_album"), notify.getPreference("metadata_title"), notify.mNotification.number);
+	        showNotify(notify.getPreference("metadata_artist"), notify.getPreference("metadata_album"), notify.getPreference("metadata_title"), notify.mNotification.getNotification().number);
 		}
+		if (mSharedPref.getBoolean("action_tts", false) && notify.mOffset == 0) {
+        	mTTS.speak(notify.mText, TextToSpeech.QUEUE_ADD, null);
+        }
 	}
 	
 	public void showNotify(String artist, String album, String title, int tracknr) {
         getAudioFocus();
-        if (mSharedPref.getBoolean("action_tts", false)) {
-        	mTTS.speak(title, TextToSpeech.QUEUE_ADD, null);
-        }
-		mRemoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+        mRemoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
 		MetadataEditor edit = mRemoteControlClient.editMetadata(true);
 		edit.putString(MediaMetadataRetriever.METADATA_KEY_TITLE, title);
 		edit.putString(MediaMetadataRetriever.METADATA_KEY_ARTIST, artist);
@@ -298,9 +295,13 @@ public class BotifierService extends AccessibilityService implements OnInitListe
     
     private ArrayList<String> extractTextFromNotification(RemoteViews view) {
 	    ArrayList<String> result = new ArrayList<String>();
-	    
+	    if (view == null) {
+	    	Log.d(TAG, "View is empty");
+	    	return null;
+	    }
 		try {
-			ViewGroup localView = (ViewGroup) mInflater.inflate(view.getLayoutId(), null);
+			int layoutid = view.getLayoutId();
+			ViewGroup localView = (ViewGroup) mInflater.inflate(layoutid, null);
 		    view.reapply(getApplicationContext(), localView);
 		    ArrayList<View> outViews = new ArrayList<View>();
 		    extractViewType(outViews, TextView.class, localView);
@@ -312,29 +313,15 @@ public class BotifierService extends AccessibilityService implements OnInitListe
 		    	}
 			}
 		} catch (Exception e) {
-			Log.d(TAG, "FAILED to load notification");
+			Log.d(TAG, "FAILED to load notification " + e.toString());
+			Log.wtf(TAG, e);
 			return null;
 			//notification might have dissapeared by now
 		}
 		Log.d(TAG, "Return result" + result);
 	    return result;
     }
-    
-    private boolean isNotificationAlive(Notification notification) {
-    	RemoteViews view = notification.contentView;
-    	ViewGroup localView = (ViewGroup) mInflater.inflate(view.getLayoutId(), null);
-	    view.reapply(getApplicationContext(), localView);
-	    ArrayList<View> outViews = new ArrayList<View>();
-	    extractViewType(outViews, ImageView.class, localView);
-	    for (View iview : outViews) {
-			ImageView imageview = (ImageView) iview;
-			if (imageview.getDrawable() == null) {
-				return false;
-			}
-		}
-    	return true;
-    }
-    
+        
     private boolean isBlackListed(String txt) {
     	Set<String> blacklist = mSharedPref.getStringSet("blacklistentries", null);
     	if (blacklist != null) {
@@ -350,53 +337,6 @@ public class BotifierService extends AccessibilityService implements OnInitListe
     	return false;
     }
     
-	@Override
-	public void onAccessibilityEvent(AccessibilityEvent event) {
-		String packageName = event.getPackageName().toString();
-		if (packageName.equals("com.github.grimpy.btnotifier") || !mAudioManager.isBluetoothA2dpOn() ) {
-			return;
-		}
-		
-		if (event.getEventType() == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED) {
-			Notification notification = (Notification) event.getParcelableData();
-			if (notification == null) {
-				return;
-			}
-			ArrayList<String> txt = extractTextFromNotification(notification);
-			if (txt == null || isBlackListed(TextUtils.join("\n", txt))) {
-				return;
-			}
-
-			String appname = getPackageLabel(packageName);
-			Log.d(TAG, String.format("Received event package=%s text: %s notdesc=%s action=%d type=%s data=%s",
-					appname,
-					event.getText(), 
-					txt.toString(),
-					event.getAction(),
-					AccessibilityEvent.eventTypeToString(event.getEventType()),
-					notification));
-
-	        Notifies not = new Notifies(packageName, appname, txt, event.getText(), notification);
-	        addNotification(not);
-	        showNotify(not);
-		    
-	    }
-		else {
-			cleanupNotifications();
-		}
-	}
-	
-	private void cleanupNotifications() {
-		Log.d(TAG, "Cleaning up notifications");
-		for (int i = mNotifications.size() -1; i >=0 ; i--) {
-			Notifies not = mNotifications.get(i);
-			boolean alive = isNotificationAlive(not.mNotification);
-			Log.d(TAG, "Checking " + not + " alive " + alive);
-			Log.d(TAG, "Removing notification" + not.toString());
-			//mNotifications.remove(i);
-																																	}
-	}
-	
 	private void addNotification(Notifies notification) {
 		for (int i = 0; i < mNotifications.size(); i++) {
 			Notifies not = mNotifications.get(i);
@@ -420,15 +360,12 @@ public class BotifierService extends AccessibilityService implements OnInitListe
 
 	}
 
-@Override
-	protected void onServiceConnected() {
+   @Override
+    public void onCreate() {
+	    super.onCreate();
 	    if (isInit) {
 	        return;
 	    }
-	    AccessibilityServiceInfo info = new AccessibilityServiceInfo();
-	    info.eventTypes = AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED | AccessibilityEvent.TYPE_ANNOUNCEMENT;
-	    info.feedbackType = AccessibilityServiceInfo.FEEDBACK_ALL_MASK;
-	    setServiceInfo(info);
 	    
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mMediaButtonReceiverComponent = new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName());
@@ -443,6 +380,8 @@ public class BotifierService extends AccessibilityService implements OnInitListe
         final IntentFilter filter = new IntentFilter();
         filter.addAction(SERVICECMD);
         filter.addAction(NOTIFICATION);
+        filter.addAction(CMD_NOTIFICATION_ADDED);
+        filter.addAction(CMD_NOTIFICATION_REMOVED);
         // Attach the broadcast listener
         registerReceiver(mIntentReceiver, filter);
         mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -451,17 +390,65 @@ public class BotifierService extends AccessibilityService implements OnInitListe
 	    isInit = true;
 	}
 
-	@Override
-	public void onInterrupt() {
+	public void onDestroy() {
+		super.onDestroy();
 		Log.d(TAG, "Service interrupted");
 		mAudiofocus = -1;
 		mAudioManager.abandonAudioFocus(mAudioFocusListener);
 	    isInit = false;
 	}
+	
+	public void notificationAdded(StatusBarNotification statusnotification) {
+		Log.i(TAG, "Received notification " + statusnotification.toString());
+		String packageName = statusnotification.getPackageName().toString();
+		Notification notification = statusnotification.getNotification();
+		if (notification == null) {
+			return;
+		}
+		ArrayList<String> txt = extractTextFromNotification(notification);
+		if (txt == null || isBlackListed(TextUtils.join("\n", txt))) {
+			return;
+		}
+
+		String appname = getPackageLabel(packageName);
+
+        Notifies not = new Notifies(packageName, appname, txt, statusnotification);
+        addNotification(not);
+        showNotify(not);
+	}
 
 	@Override
+	public void onNotificationPosted(StatusBarNotification statusnotification) {
+		if (statusnotification.isOngoing()) {
+			return;
+		}
+		Intent i = new Intent(CMD_NOTIFICATION_ADDED);
+		i.putExtra("notification", statusnotification);
+		sendBroadcast(i);
+		
+	}
+
+	@Override
+	public void onNotificationRemoved(StatusBarNotification statusnotification) {
+		Log.d(TAG, "Cleaning up notifications");
+		for (int i = mNotifications.size() -1; i >=0 ; i--) {
+			Notifies not = mNotifications.get(i);
+			if (not.mNotification.getId() == statusnotification.getId()) {
+				if (not.equals(mCurrent)) {
+					removeNotification();
+				} else {
+					mNotifications.remove(not);
+				}
+				return;
+				
+			}
+		}
+
+		
+	}
+	@Override
 	public void onInit(int status) {
-		// TODO Auto-generated method stub
+		// is part of TTS listener
 		
 	}
 	
