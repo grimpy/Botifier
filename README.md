@@ -6,11 +6,13 @@ Pushes Android notifications from the notification drawer to any connected bluet
 * Show notifcations on car radio 
 * Show application as artist
 * Show summery as album
+* Play notifcation via TTS (text to speech)
 * Show full notification text as title (can be splitted over multiple chunks max length is configurable)
 * Use next / previous track to navigate through notifications
 * Use pause / play button to remove notifcation
 
-Uses Accessibility service don't forget to enable this (the only way to intercept Notifications on android)
+Uses new Notificationlistener service don't forget to enable this under settings -> security
+Note: This api is only available since Android 4.3 hence Botifier is only compatible with 4.3
 
 
 Source available @ https://github.com/grimpy/Botifier
