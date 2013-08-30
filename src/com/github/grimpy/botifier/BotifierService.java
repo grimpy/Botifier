@@ -109,6 +109,21 @@ public class BotifierService extends NotificationListenerService implements OnIn
 		public String toString() {
 			return String.format("%s %s %s", mPackageLabel, mDescription, mText);
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (Notifies.class.isInstance(o)) {
+				Notifies not = (Notifies) o;
+				if (not.mNotification.getId() == mNotification.getId() &&
+				    not.mNotification.getPackageName() == mNotification.getPackageName() &&
+				    not.mNotification.getUserId() == mNotification.getUserId()) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+
 	}
 	
     private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
@@ -159,6 +174,9 @@ public class BotifierService extends NotificationListenerService implements OnIn
     	}
     	Log.d(TAG, "Remove current notification: " + mCurrent);
     	Notifies old = mNotifications.get(mCurrent);
+    	removeNotification(old);
+    } 	
+    private void removeNotification(Notifies old) {
     	cancelNotification(old.mNotification.getPackageName(), old.mNotification.getTag(), old.mNotification.getId());
     	mNotifications.remove(old);
     	if (mNotifications.size() == 0) {
@@ -194,6 +212,9 @@ public class BotifierService extends NotificationListenerService implements OnIn
     	} else if (idx < 0) {
     		idx = mNotifications.size() -1;
     	}
+    	if (mCurrent >= mNotifications.size()){
+    		mCurrent = mNotifications.size() -1;
+    	}
     	Log.d(TAG, "Move new idx " + idx + " size: " + mNotifications.size());
     	Notifies current = mNotifications.get(mCurrent);
     	if (next || ( offset > 0 && mCurrent != -1 && !current.hasNext())) {
@@ -206,20 +227,20 @@ public class BotifierService extends NotificationListenerService implements OnIn
     
     private void resetNotify() {
         showNotify("Botifier", "Botifier", "Botifier", 0);
-    	mAudioManager.abandonAudioFocus(mAudioFocusListener);
-        mAudioManager.unregisterMediaButtonEventReceiver(mMediaButtonReceiverComponent);
+    	//mAudioManager.abandonAudioFocus(mAudioFocusListener);
+        //mAudioManager.unregisterMediaButtonEventReceiver(mMediaButtonReceiverComponent);
     }
 	
 	public void showNotify(Notifies notify) {
 		Log.d(TAG, "Setting notification " + notify.toString());
 		mCurrent = mNotifications.indexOf(notify);
+		if (mSharedPref.getBoolean("action_tts", false) && notify.mOffset == 0) {
+        	mTTS.speak(notify.mText, TextToSpeech.QUEUE_ADD, null);
+        }
 		if (isActive()) {
 			Log.d(TAG, "Setting Metadata");
 	        showNotify(notify.getPreference("metadata_artist"), notify.getPreference("metadata_album"), notify.getPreference("metadata_title"), notify.mNotification.getNotification().number);
 		}
-		if (mSharedPref.getBoolean("action_tts", false) && notify.mOffset == 0) {
-        	mTTS.speak(notify.mText, TextToSpeech.QUEUE_ADD, null);
-        }
 	}
 	
 	public void showNotify(String artist, String album, String title, int tracknr) {
@@ -341,7 +362,7 @@ public class BotifierService extends NotificationListenerService implements OnIn
 		for (int i = 0; i < mNotifications.size(); i++) {
 			Notifies not = mNotifications.get(i);
 			Log.d(TAG, "Adding notification comparing with " + not.mPackageName);
-			if (not.mPackageName.equals(notification.mPackageName)) {
+			if (not.equals(notification)) {
 				mNotifications.set(i, notification);
 				return;
 			}
@@ -437,7 +458,7 @@ public class BotifierService extends NotificationListenerService implements OnIn
 				if (not.equals(mCurrent)) {
 					removeNotification();
 				} else {
-					mNotifications.remove(not);
+					removeNotification(not);
 				}
 				return;
 				

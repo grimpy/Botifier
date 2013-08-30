@@ -12,7 +12,6 @@ import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
@@ -46,7 +45,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 	            NotificationManager nManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
 	            NotificationCompat.Builder ncomp = new NotificationCompat.Builder(getActivity());
 	            ncomp.setContentTitle("My Notification");
-	            ncomp.setContentText("Botifier test");
+	            ncomp.setContentText(String.format("%s", new java.util.Date().getSeconds()));
 	            ncomp.setTicker("Botifier ticker test");
 	            ncomp.setSmallIcon(R.drawable.ic_launcher);
 	            ncomp.setAutoCancel(true);
