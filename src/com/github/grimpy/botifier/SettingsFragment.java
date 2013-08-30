@@ -28,12 +28,18 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 		addPreferencesFromResource(R.xml.botifier_preference);
 		mSharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		mSharedPref.registerOnSharedPreferenceChangeListener(this);
-		String[] prefs = {"metadata_artist", "metadata_album", "metadata_title"};
+		String[] prefs = {"metadata_artist", "metadata_album", "metadata_title", "tts_value"};
 		for (String prefkey : prefs) {
 			String value = mSharedPref.getString(prefkey, "");
 			Preference pref = findPreference(prefkey);
 			pref.setSummary(value.replace("%", "%%"));
 		}
+		boolean tts = mSharedPref.getBoolean("action_tts", false);
+		Preference pref = findPreference("tts_value");
+		pref.setEnabled(tts);
+		pref = findPreference("tts_bt_only");
+		pref.setEnabled(tts);
+
 		
 	}
 	
@@ -60,11 +66,17 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 		return true;
 	}
 
-		
 	@Override
 	public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences,
 			final String key) {
-		if (key.equals("action_tts") || key.equals("blacklistentries")) {
+		if (key.equals("blacklistentries") || key.equals("tts_bt_only")) {
+			return;
+		} else if (key.equals("action_tts")) {
+			boolean tts = sharedPreferences.getBoolean("action_tts", false);
+			Preference pref = findPreference("tts_value");
+			pref.setEnabled(tts);
+			pref = findPreference("tts_bt_only");
+			pref.setEnabled(tts);
 			return;
 		}
 		String msg = sharedPreferences.getString(key, "");
@@ -74,7 +86,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 			input.setInputType(InputType.TYPE_CLASS_TEXT);
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			builder.setView(input);
-			builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() { 
+			builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() { 
 			    @Override
 			    public void onClick(DialogInterface dialog, int which) {
 			        String setting = input.getText().toString();

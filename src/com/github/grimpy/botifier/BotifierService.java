@@ -86,6 +86,10 @@ public class BotifierService extends NotificationListenerService implements OnIn
 		}
 		
 		public String getPreference(String key) {
+			return getPreference(key, false);
+		}
+		
+		public String getPreference(String key, boolean full) {
 			String message = mSharedPref.getString(key, "");
 			int maxlength = Integer.valueOf(mSharedPref.getString("maxlength", "0"));
 			message = message.replace("%f", toString());
@@ -93,16 +97,18 @@ public class BotifierService extends NotificationListenerService implements OnIn
 			message = message.replace("%d", mDescription);
 			message = message.replace("%m", mText);
 			
-			if (maxlength != 0 && message.length() > maxlength) {
-				int start = mOffset * maxlength;
-				int end = start + maxlength;
-				if (end >= message.length()) {
-					end = message.length() -1;
-					mOffset = -1;
+			if (!full) {
+				if (maxlength != 0 && message.length() > maxlength) {
+					int start = mOffset * maxlength;
+					int end = start + maxlength;
+					if (end >= message.length()) {
+						end = message.length() -1;
+						mOffset = -1;
+					}
+					String result = message.substring(start, end);
+					mOffset++;
+					return result;
 				}
-				String result = message.substring(start, end);
-				mOffset++;
-				return result;
 			}
 			return message;
 		}
@@ -237,8 +243,10 @@ public class BotifierService extends NotificationListenerService implements OnIn
 	public void showNotify(Notifies notify) {
 		Log.d(TAG, "Setting notification " + notify.toString());
 		mCurrent = mNotifications.indexOf(notify);
-		if (mSharedPref.getBoolean("action_tts", false) && !notify.mRead) {
-        	mTTS.speak(notify.mText, TextToSpeech.QUEUE_FLUSH, null);
+		if (mSharedPref.getBoolean("action_tts", false) && !notify.mRead &&
+				(isActive() || !mSharedPref.getBoolean("tts_bt_only", true))) {
+			String txt = notify.getPreference("tts_value", false);
+        	mTTS.speak(txt, TextToSpeech.QUEUE_FLUSH, null);
         	notify.mRead = true;
         }
 		if (isActive()) {
