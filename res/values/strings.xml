@@ -12,13 +12,15 @@
     <string name="actions">Actions</string>
     <string name="action_reload">Show</string>
     <string name="action_string">Set message</string>
+    <string name="category_tts">TTS</string>
     <string name="action_tts">Enable TTS</string>
     <string name="action_tts_desc">Enable text to speech</string>
+    <string name="tts_value">Text to speak</string>
+    <string name="tts_bt_only">Only on Bluetooth</string>
     <string name="maxlength">Max Length</string>
     <string name="debug">Debug</string>
     <string name="action_makenotification">Test Notification</string>
     <string name="custom_title">Enter custom text</string>
-    <string name="ok">Ok</string>
     
     <string-array name="metadata_fields">
         <item >All (%f)</item>
