@@ -148,6 +148,9 @@ public class BotifierService extends NotificationListenerService implements OnIn
 		            case KeyEvent.KEYCODE_HEADSETHOOK:
 		            case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
 		            case KeyEvent.KEYCODE_MEDIA_PLAY:
+		            case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+		            	resetNotify(true);
+		            	break;
 		            case KeyEvent.KEYCODE_MEDIA_PAUSE:
 		            	removeNotification();
 		                break;
@@ -188,14 +191,14 @@ public class BotifierService extends NotificationListenerService implements OnIn
     	mNotifications.remove(old);
     	if (mNotifications.size() == 0) {
     		mCurrent = -1;
-    		resetNotify(false);
+    		resetNotify(true);
     		return;
     	}
     	showNotify(0, true);
     }
     
     private void getAudioFocus() {
-    	if (true || mAudiofocus != AudioManager.AUDIOFOCUS_GAIN) {
+    	if (true || mAudiofocus != AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK) {
     		setUpRemoteControlClient();
     		Log.d(TAG, "Focus acquire " + mAudiofocus);
     	}
@@ -287,7 +290,7 @@ public class BotifierService extends NotificationListenerService implements OnIn
                 | RemoteControlClient.FLAG_KEY_MEDIA_STOP;
         mRemoteControlClient.setTransportControlFlags(flags);
         mAudiofocus = mAudioManager.requestAudioFocus(mAudioFocusListener,
-                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
 
     }
 	

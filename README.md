@@ -10,6 +10,7 @@ Pushes Android notifications from the notification drawer to any connected bluet
 * Show full notification text as title (can be splitted over multiple chunks max length is configurable)
 * Use next / previous track to navigate through notifications
 * Use pause / play button to remove notifcation
+* Use forward button to close notification stream might help to regain focus to previous playing audio.
 
 Uses new Notificationlistener service don't forget to enable this under settings -> security
 Note: This api is only available since Android 4.3 hence Botifier is only compatible with 4.3
