@@ -66,14 +66,15 @@ public class BotifierService extends NotificationListenerService implements OnIn
 		public String mText;
 		public StatusBarNotification mNotification;
 		public int mOffset;
+		public boolean mRead;
 		public Notifies(String packageName, String packageLabel, ArrayList<String> text, StatusBarNotification notification) {
 			mPackageLabel = packageLabel;
 			mPackageName = packageName;
 			mDescription = notification.getNotification().tickerText.toString();
 			mText = TextUtils.join("\n", text);
-
 			mNotification = notification;
 			mOffset = 0;
+			mRead = false;
 		}
 		
 		public boolean hasNext() {
@@ -169,7 +170,7 @@ public class BotifierService extends NotificationListenerService implements OnIn
     
     private void removeNotification() {
     	if (mCurrent == -1 || mCurrent > mNotifications.size() -1) {
-    		resetNotify();
+    		resetNotify(true);
     		return;
     	}
     	Log.d(TAG, "Remove current notification: " + mCurrent);
@@ -181,11 +182,10 @@ public class BotifierService extends NotificationListenerService implements OnIn
     	mNotifications.remove(old);
     	if (mNotifications.size() == 0) {
     		mCurrent = -1;
-    		resetNotify();
+    		resetNotify(false);
     		return;
     	}
     	showNotify(0, true);
-
     }
     
     private void getAudioFocus() {
@@ -225,17 +225,21 @@ public class BotifierService extends NotificationListenerService implements OnIn
     	
     }
     
-    private void resetNotify() {
-        showNotify("Botifier", "Botifier", "Botifier", 0);
-    	//mAudioManager.abandonAudioFocus(mAudioFocusListener);
-        //mAudioManager.unregisterMediaButtonEventReceiver(mMediaButtonReceiverComponent);
+    private void resetNotify(boolean close) {
+        if (close) {
+        	mAudioManager.abandonAudioFocus(mAudioFocusListener);
+        	mAudioManager.unregisterMediaButtonEventReceiver(mMediaButtonReceiverComponent);
+        } else {
+            showNotify("Botifier", "Botifier", "Botifier", 0);
+        }
     }
 	
 	public void showNotify(Notifies notify) {
 		Log.d(TAG, "Setting notification " + notify.toString());
 		mCurrent = mNotifications.indexOf(notify);
-		if (mSharedPref.getBoolean("action_tts", false) && notify.mOffset == 0) {
-        	mTTS.speak(notify.mText, TextToSpeech.QUEUE_ADD, null);
+		if (mSharedPref.getBoolean("action_tts", false) && !notify.mRead) {
+        	mTTS.speak(notify.mText, TextToSpeech.QUEUE_FLUSH, null);
+        	notify.mRead = true;
         }
 		if (isActive()) {
 			Log.d(TAG, "Setting Metadata");
