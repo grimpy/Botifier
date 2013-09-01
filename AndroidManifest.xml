@@ -5,7 +5,7 @@
     android:versionName="1.0.1" >
 
     <uses-sdk
-        android:minSdkVersion="18"
+        android:minSdkVersion="14"
         android:targetSdkVersion="18" />
 	<uses-permission android:name="android.permission.BROADCAST_STICKY" />
     <application
@@ -22,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>        
-        <service android:name="com.github.grimpy.botifier.BotifierService"
+        <service android:name="com.github.grimpy.botifier.BotifierNotificationService"
             	 android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
      		<intent-filter>
            		<action android:name="android.service.notification.NotificationListenerService" />

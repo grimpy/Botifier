@@ -13,6 +13,6 @@ public class MainActivity extends Activity {
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
-        startService(new Intent(this, BotifierService.class));
+        startService(new Intent(this, BotifierManager.class));
     }       
 }

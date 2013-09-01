@@ -77,8 +77,8 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
 
             if (KeyEvent.ACTION_UP == action) {
 	            final Intent i = new Intent();
-	            i.setAction(BotifierService.SERVICECMD);
-	            i.putExtra(BotifierService.SERVICECMD, keycode);
+	            i.setAction(BotifierManager.SERVICECMD);
+	            i.putExtra(BotifierManager.SERVICECMD, keycode);
 	            context.sendBroadcast(i);
             }
             
