@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.grimpy.botifier"
-    android:versionCode="4"
-    android:versionName="1.0.1" >
+    android:versionCode="5"
+    android:versionName="1.1.0" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -30,6 +30,17 @@
      		    <action android:name="com.github.grimpy.btnotifier.notification" />
      		</intent-filter>
  		</service>
+ 		<service android:name="com.github.grimpy.botifier.BotifierAccessibilityService"
+              android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+         <intent-filter>
+             <action android:name="android.accessibilityservice.AccessibilityService" />
+         </intent-filter>
+         <intent-filter>
+             <action android:name="com.github.grimpy.btnotifier.cmd" />
+             <action android:name="com.github.grimpy.btnotifier.notification" />
+             <category android:name="android.intent.category.DEFAULT" />
+         </intent-filter>
++     </service> 
  		<receiver android:name="com.github.grimpy.botifier.MediaButtonIntentReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
