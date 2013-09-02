@@ -1,5 +1,8 @@
 package com.github.grimpy.botifier;
 
+import java.util.Arrays;
+import java.util.List;
+
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -19,20 +22,23 @@ import com.github.grimpy.botifier.R;
 
 public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener{
 	private SharedPreferences mSharedPref;
-		
+	private static String[] META = {"metadata_artist", "metadata_album", "metadata_title", "tts_value"};
+	private List<String> mFields;
+	private List<String> mValues;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mFields = Arrays.asList(getResources().getStringArray(R.array.metadata_fields));
+		mValues = Arrays.asList(getResources().getStringArray(R.array.metadata_fields_values));
+		
 		
 		addPreferencesFromResource(R.xml.botifier_preference);
 		mSharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		mSharedPref.registerOnSharedPreferenceChangeListener(this);
-		String[] prefs = {"metadata_artist", "metadata_album", "metadata_title", "tts_value"};
-		for (String prefkey : prefs) {
+		for (String prefkey : META) {
 			String value = mSharedPref.getString(prefkey, "");
-			Preference pref = findPreference(prefkey);
-			pref.setSummary(value.replace("%", "%%"));
+			setSummary(prefkey, value);
 		}
 		boolean tts = mSharedPref.getBoolean("action_tts", false);
 		Preference pref = findPreference("tts_value");
@@ -41,6 +47,15 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 		pref.setEnabled(tts);
 
 		
+	}
+	
+	private void setSummary(String prefkey, String value) {
+		Preference pref = findPreference(prefkey);
+		int idx = mValues.indexOf(value);
+		if (idx >= 0) {
+			value = mFields.get(idx);
+		}
+		pref.setSummary(value.replace("%", "%%"));
 	}
 	
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
@@ -80,26 +95,28 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 			return;
 		}
 		String msg = sharedPreferences.getString(key, "");
-		if (key.startsWith("metadata_") && msg.equals("custom")) {
-			final EditText input = new EditText(getActivity());
-			// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-			input.setInputType(InputType.TYPE_CLASS_TEXT);
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setView(input);
-			builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() { 
-			    @Override
-			    public void onClick(DialogInterface dialog, int which) {
-			        String setting = input.getText().toString();
-			        sharedPreferences.edit().putString(key, setting).apply();
-			    }
-			});
-			builder.setTitle(R.string.custom_title);
-			AlertDialog dialog = builder.create();
-			dialog.show();
+		if (Arrays.asList(META).contains(key)) {
+			if (msg.equals("custom")) {
+				final EditText input = new EditText(getActivity());
+				// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+				input.setInputType(InputType.TYPE_CLASS_TEXT);
+				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				builder.setView(input);
+				builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() { 
+				    @Override
+				    public void onClick(DialogInterface dialog, int which) {
+				        String setting = input.getText().toString();
+				        sharedPreferences.edit().putString(key, setting).apply();
+				    }
+				});
+				builder.setTitle(R.string.custom_title);
+				AlertDialog dialog = builder.create();
+				dialog.show();
+			} else {
+				setSummary(key, msg);				
+			}
 			
 		}
-		Preference pref = findPreference(key);
-		pref.setSummary(msg.replace("%", "%%"));
 	}
     
     
