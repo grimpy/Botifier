@@ -1,7 +1,9 @@
 package com.github.grimpy.botifier;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.os.Bundle;
 import android.preference.Preference;
@@ -25,6 +27,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 	private static String[] META = {"metadata_artist", "metadata_album", "metadata_title", "tts_value"};
 	private List<String> mFields;
 	private List<String> mValues;
+	private Map<String,String> mPrefCache = new HashMap<String,String>();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -45,12 +48,12 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 		pref.setEnabled(tts);
 		pref = findPreference("tts_bt_only");
 		pref.setEnabled(tts);
-
 		
 	}
 	
 	private void setSummary(String prefkey, String value) {
 		Preference pref = findPreference(prefkey);
+		mPrefCache.put(prefkey, value);
 		int idx = mValues.indexOf(value);
 		if (idx >= 0) {
 			value = mFields.get(idx);
@@ -100,6 +103,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 				final EditText input = new EditText(getActivity());
 				// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
 				input.setInputType(InputType.TYPE_CLASS_TEXT);
+				input.setText(mPrefCache.get(key));
+				input.selectAll();
 				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 				builder.setView(input);
 				builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() { 

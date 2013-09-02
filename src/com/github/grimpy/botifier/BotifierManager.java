@@ -160,9 +160,7 @@ public class BotifierManager implements OnInitListener {
     		mCurrent = -1;
     		return;
     	}
-    	int idx = mCurrent + offset;
-    	Log.d(TAG, "Move notification with offset " + offset + " currnetidx: " + idx);
-    	
+    	int idx = mCurrent + offset;   	
     	if (idx >= mNotifications.size()) {
     		idx = 0;
     	} else if (idx < 0) {
@@ -171,7 +169,6 @@ public class BotifierManager implements OnInitListener {
     	if (mCurrent >= mNotifications.size()){
     		mCurrent = mNotifications.size() -1;
     	}
-    	Log.d(TAG, "Move new idx " + idx + " size: " + mNotifications.size());
     	Botification current = mNotifications.get(mCurrent);
     	if (next || ( offset > 0 && mCurrent != -1 && !current.hasNext())) {
     		showNotify(mNotifications.get(idx));
@@ -183,8 +180,10 @@ public class BotifierManager implements OnInitListener {
     
     private void resetNotify(boolean close) {
         if (close) {
+        	mRemoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
+        	mAudioManager.unregisterRemoteControlClient(mRemoteControlClient);
         	mAudioManager.abandonAudioFocus(mAudioFocusListener);
-        	mAudioManager.unregisterMediaButtonEventReceiver(mMediaButtonReceiverComponent);
+            mAudioManager.unregisterMediaButtonEventReceiver(mMediaButtonReceiverComponent);
         } else {
             showNotify("Botifier", "Botifier", "Botifier", 0);
         }
