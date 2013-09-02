@@ -119,7 +119,7 @@ public class BotifierManager implements OnInitListener {
         }
     };
     
-    public boolean isActive() {
+    private boolean isActive() {
     	return mAudioManager.isBluetoothA2dpOn() || !mSharedPref.getBoolean("metadata_bt_only", true);
     }
     
@@ -195,7 +195,7 @@ public class BotifierManager implements OnInitListener {
 		mCurrent = mNotifications.indexOf(notify);
 		if (mSharedPref.getBoolean("action_tts", false) && !notify.mRead &&
 				(mAudioManager.isBluetoothA2dpOn() || !mSharedPref.getBoolean("tts_bt_only", true))) {
-			String txt = notify.getPreference("tts_value", false);
+			String txt = notify.getPreference("tts_value", true);
         	mTTS.speak(txt, TextToSpeech.QUEUE_FLUSH, null);
         	notify.mRead = true;
         }
