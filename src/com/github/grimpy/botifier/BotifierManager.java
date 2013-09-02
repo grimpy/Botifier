@@ -99,17 +99,10 @@ public class BotifierManager implements OnInitListener {
 		            	showNotify(-1);
 		                break;
 	            }
-        	} else if (intent.getAction().equals(NOTIFICATION)) {
-        		String album = intent.getStringExtra("album");
-        		String artist = intent.getStringExtra("artist");
-        		String title = intent.getStringExtra("title");
-
-        		showNotify(album, artist, title, 10);
         	} else if (intent.getAction().equals(CMD_NOTIFICATION_ADDED)) {
         		Botification not = intent.getParcelableExtra("notification");
         		not.load(mService);
-        		notificationAdded(not);
-        		
+        		notificationAdded(not);        		
         	} else if (intent.getAction().equals(CMD_NOTIFICATION_REMOVED)) {
         		Botification not_todelete = intent.getParcelableExtra("notification");
         		for (int i = mNotifications.size() -1; i >=0 ; i--) {
@@ -127,7 +120,7 @@ public class BotifierManager implements OnInitListener {
     };
     
     public boolean isActive() {
-    	return mAudioManager.isBluetoothA2dpOn() || true;
+    	return mAudioManager.isBluetoothA2dpOn() || !mSharedPref.getBoolean("metadata_bt_only", true);
     }
     
     private void removeNotification() {
@@ -201,7 +194,7 @@ public class BotifierManager implements OnInitListener {
 		Log.d(TAG, "Setting notification " + notify.toString());
 		mCurrent = mNotifications.indexOf(notify);
 		if (mSharedPref.getBoolean("action_tts", false) && !notify.mRead &&
-				(isActive() || !mSharedPref.getBoolean("tts_bt_only", true))) {
+				(mAudioManager.isBluetoothA2dpOn() || !mSharedPref.getBoolean("tts_bt_only", true))) {
 			String txt = notify.getPreference("tts_value", false);
         	mTTS.speak(txt, TextToSpeech.QUEUE_FLUSH, null);
         	notify.mRead = true;

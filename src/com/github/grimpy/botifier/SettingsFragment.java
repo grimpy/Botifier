@@ -94,8 +94,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 			pref.setEnabled(tts);
 			return;
 		}
-		String msg = sharedPreferences.getString(key, "");
 		if (Arrays.asList(META).contains(key)) {
+			String msg = sharedPreferences.getString(key, "");
 			if (msg.equals("custom")) {
 				final EditText input = new EditText(getActivity());
 				// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
@@ -110,6 +110,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 				    }
 				});
 				builder.setTitle(R.string.custom_title);
+				builder.setMessage(R.string.custom_description);
 				AlertDialog dialog = builder.create();
 				dialog.show();
 			} else {

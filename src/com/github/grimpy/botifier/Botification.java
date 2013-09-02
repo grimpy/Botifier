@@ -90,8 +90,16 @@ class Botification implements Parcelable {
 	    
 	}
 	
+	private int getMaxLength() {
+		String maxLength = mSharedPref.getString("maxlength", "");
+		if (!TextUtils.isEmpty(maxLength)){
+			return Integer.valueOf(maxLength);
+		}
+		return 0;
+	}
+	
 	public boolean hasNext() {
-		int maxlength = Integer.valueOf(mSharedPref.getString("maxlength", "0"));
+		int maxlength = getMaxLength();
 		if (maxlength == 0) {
 			return false;
 		}
@@ -104,7 +112,7 @@ class Botification implements Parcelable {
 	
 	public String getPreference(String key, boolean full) {
 		String message = mSharedPref.getString(key, "");
-		int maxlength = Integer.valueOf(mSharedPref.getString("maxlength", "0"));
+		int maxlength = getMaxLength();
 		message = message.replace("%f", toString());
 		message = message.replace("%a", mPackageLabel);
 		message = message.replace("%d", mDescription);

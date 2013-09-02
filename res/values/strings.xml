@@ -2,9 +2,12 @@
 <resources>
 
     <string name="app_name">Botifier</string>
-    <string name="metadata_display">Display</string>
+    <string name="metadata_display">Device display</string>
     <string name="filters">Filters</string>
     <string name="blacklist">Black List</string>
+    <string name="blacklist_add">Add Black List</string>
+    <string name="blacklist_edit">Edit Black List</string>
+    <string name="blacklist_desc">Example: To hide notifcations containing the word \"car\", enter \"*car*\".</string>
     <string name="action_settings">Settings</string>
     <string name="metadata_artist">Artist</string>
     <string name="metadata_album">Album</string>
@@ -12,21 +15,29 @@
     <string name="actions">Actions</string>
     <string name="action_reload">Show</string>
     <string name="action_string">Set message</string>
-    <string name="category_tts">TTS</string>
-    <string name="action_tts">Enable TTS</string>
+    <string name="category_tts">Text to Speech</string>
+    <string name="action_tts">Enable</string>
     <string name="action_tts_desc">Enable text to speech</string>
-    <string name="tts_value">Text to speak</string>
-    <string name="tts_bt_only">Only on Bluetooth</string>
+    <string name="tts_value">Text to Speak</string>
+    <string name="bt_only">On Bluetooth</string>
+    <string name="bt_only_desc_tts">Enable TTS only when using Bluetooth</string>
+    <string name="bt_only_desc_meta">Enable text only when using Bluetooth</string>
     <string name="maxlength">Max Length</string>
+    <string name="maxlength_desc">Maximum length of text displayed</string>
     <string name="debug">Debug</string>
     <string name="action_makenotification">Test Notification</string>
     <string name="custom_title">Enter custom text</string>
+    <string name="custom_description">Usage:\n\n
+%f: Full Notification\n
+%m: Notification Message\n
+%d: Notification Description\n
+%a: Application Name</string>
     
     <string-array name="metadata_fields">
-        <item >All (%f)</item>
-        <item >Application Name (%a)</item>
-        <item >Notification message (%m)</item>
-        <item >Notification description (%d)</item>
+        <item >All</item>
+        <item >Application Name</item>
+        <item >Notification Message</item>
+        <item >Notification Description</item>
         <item >Custom</item>
     </string-array>
     

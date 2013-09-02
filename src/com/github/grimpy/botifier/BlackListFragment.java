@@ -15,6 +15,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -48,6 +49,9 @@ public class BlackListFragment extends PreferenceFragment {
 	}
 	
 	private void addEntry(String black) {
+		if (TextUtils.isEmpty(black)) {
+			return;
+		}
 		Preference pref = new Preference(getActivity());
         pref.setTitle(black);
         mBlackList.addPreference(pref);
@@ -66,6 +70,9 @@ public class BlackListFragment extends PreferenceFragment {
 	}
 	
 	private void editEntry(Preference pref, String value) {
+		if (TextUtils.isEmpty(value)) {
+			return;
+		}
 		String oldvalue = pref.getTitle().toString();
 		pref.setTitle(value);
 		ArrayList<String> newlist = new ArrayList<String>(mBlackListEntries);
@@ -84,7 +91,8 @@ public class BlackListFragment extends PreferenceFragment {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		final EditText input = new EditText(getActivity());
 	    builder.setView(input);
-	    builder.setTitle("Add Black List");
+	    builder.setTitle(R.string.blacklist_add);
+	    builder.setMessage(R.string.blacklist_desc);
 	    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 	        //@Override
 	        public void onClick(DialogInterface dialog, int which) {
@@ -106,7 +114,8 @@ public class BlackListFragment extends PreferenceFragment {
 		input.selectAll();
 		input.setActivated(true);
 	    builder.setView(input);
-	    builder.setTitle("Edit Black List");
+	    builder.setTitle(R.string.blacklist_edit);
+	    builder.setMessage(R.string.blacklist_desc);
 	    builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
 	        //@Override
 	        public void onClick(DialogInterface dialog, int which) {

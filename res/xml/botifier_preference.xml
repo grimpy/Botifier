@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceCategory android:title="@string/action_tts">
+    <PreferenceCategory android:title="@string/category_tts">
         <CheckBoxPreference android:title="@string/action_tts"
             android:key="action_tts"
             android:summary="@string/action_tts_desc"
@@ -10,8 +10,9 @@
             android:entryValues="@array/metadata_fields_values"
             android:defaultValue="%m"
             android:dialogTitle="@string/tts_value" android:title="@string/tts_value"/>
-   	    <CheckBoxPreference android:title="@string/tts_bt_only"
+   	    <CheckBoxPreference android:title="@string/bt_only"
             android:key="tts_bt_only"
+            android:summary="@string/bt_only_desc_tts"
             android:defaultValue="true" />
    	        
 	</PreferenceCategory>
@@ -35,7 +36,12 @@
 	    <EditTextPreference android:numeric="integer"
 	        			android:key="maxlength"
 	        			android:dialogTitle="@string/maxlength"
+	        			android:summary="@string/maxlength_desc"
 	        			android:title="@string/maxlength"/>
+     	<CheckBoxPreference android:title="@string/bt_only"
+            android:key="metadata_bt_only"
+            android:summary="@string/bt_only_desc_meta"
+            android:defaultValue="true" />
 	        
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/filters">
