@@ -26,7 +26,6 @@ class Botification implements Parcelable {
 	public String mText;
 	public String mPkg;
 	public int mId;
-	public Notification mNotification;
 	private SharedPreferences mSharedPref;
     
 	public int mOffset;
@@ -38,11 +37,12 @@ class Botification implements Parcelable {
 	
     public static final Parcelable.Creator<Botification> CREATOR = new Parcelable.Creator<Botification>() {
         public Botification createFromParcel(Parcel in) {
-        	Notification not = Notification.CREATOR.createFromParcel(in);
         	int id = in.readInt();
         	String pkg = in.readString();
         	String tag = in.readString();
-            return new Botification(not, id, pkg, tag);
+        	String description = in.readString();
+        	String text = in.readString();
+            return new Botification(id, pkg, tag, description, text);
         }
 
 		@Override
@@ -54,20 +54,22 @@ class Botification implements Parcelable {
     
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		mNotification.writeToParcel(dest, flags);
 		dest.writeInt(mId);
 		dest.writeString(mPkg);		
 		dest.writeString(mTag);
+		dest.writeString(mDescription);
+		dest.writeString(mText);
 	}
 	
-	public Botification(Notification notification, int id, String pkg, String tag) {
+	
+	public Botification(int id, String pkg, String tag, String description, String text) {
 		mId = id;
 		mPkg = pkg;
 		mTag = tag;
-		mDescription = notification.tickerText.toString();
-		mNotification = notification;
 		mOffset = 0;
 		mRead = false;
+		mDescription = description;
+		mText = text;
 	}
 	
 	private String getPackageLabel(Service service, String packagename){
@@ -85,7 +87,6 @@ class Botification implements Parcelable {
 	
 	public void load(Service service) {
 		mPackageLabel = getPackageLabel(service, mPkg);
-		mText = TextUtils.join("\n",extractTextFromNotification(service, mNotification));
 		mSharedPref = PreferenceManager.getDefaultSharedPreferences(service);
 	    
 	}
@@ -151,7 +152,7 @@ class Botification implements Parcelable {
 		return false;
 	}
 	
-    private void extractViewType(ArrayList<View> outViews, Class viewtype, View source) {
+    private static void extractViewType(ArrayList<View> outViews, Class viewtype, View source) {
     	if (ViewGroup.class.isInstance(source)) {
     		ViewGroup vg = (ViewGroup) source;
     		for (int i = 0; i < vg.getChildCount(); i++) {
@@ -163,18 +164,20 @@ class Botification implements Parcelable {
     	}
     }
     
-    private ArrayList<String> extractTextFromNotification(Service service, Notification notification) {
+    public static String extractTextFromNotification(Service service, Notification notification) {
     	ArrayList<String> result = null;
 	    result =  extractTextFromNotification(service, notification.bigContentView);
 	    if (result == null) {
 	    	result = extractTextFromNotification(service, notification.contentView);
 	    }
-	    return result;
+	    if (result == null){
+	    	return "";
+	    }
+	    return TextUtils.join("\n", result);
 
     }
-
     
-    private ArrayList<String> extractTextFromNotification(Service service, RemoteViews view) {
+    private static ArrayList<String> extractTextFromNotification(Service service, RemoteViews view) {
     	LayoutInflater inflater = (LayoutInflater) service.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	    ArrayList<String> result = new ArrayList<String>();
 	    if (view == null) {

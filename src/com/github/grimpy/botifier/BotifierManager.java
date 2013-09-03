@@ -100,9 +100,9 @@ public class BotifierManager implements OnInitListener {
 		                break;
 	            }
         	} else if (intent.getAction().equals(CMD_NOTIFICATION_ADDED)) {
-        		Botification not = intent.getParcelableExtra("notification");
-        		not.load(mService);
-        		notificationAdded(not);        		
+        		Botification bot = intent.getParcelableExtra("botification");
+        		bot.load(mService);
+        		notificationAdded(bot);        		
         	} else if (intent.getAction().equals(CMD_NOTIFICATION_REMOVED)) {
         		Botification not_todelete = intent.getParcelableExtra("notification");
         		for (int i = mNotifications.size() -1; i >=0 ; i--) {
@@ -202,7 +202,7 @@ public class BotifierManager implements OnInitListener {
         }
 		if (isActive()) {
 			Log.d(TAG, "Setting Metadata");
-	        showNotify(notify.getPreference("metadata_artist"), notify.getPreference("metadata_album"), notify.getPreference("metadata_title"), notify.mNotification.number);
+	        showNotify(notify.getPreference("metadata_artist"), notify.getPreference("metadata_album"), notify.getPreference("metadata_title"), 1);
 		}
 	}
 	

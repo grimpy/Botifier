@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -73,6 +75,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 	            ncomp.setTicker("Botifier ticker test");
 	            ncomp.setSmallIcon(R.drawable.ic_launcher);
 	            ncomp.setAutoCancel(true);
+	            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+	            ncomp.setSound(alarmSound);
 	            nManager.notify((int)System.currentTimeMillis(),ncomp.build());
 
 			} else if (prefkey.equals("blacklist")) {

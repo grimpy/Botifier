@@ -36,11 +36,13 @@ public class BotifierAccessibilityService extends AccessibilityService implement
 	}
 	
 	
-	private void sendCmd(Botification not, String cmd) {
+	private void sendCmd(AccessibilityEvent event, Notification not, String cmd) {
 		Intent i = new Intent(cmd);
-		i.putExtra("notification", not);
-		sendBroadcast(i);
-		
+		String description = not.tickerText.toString();
+		String text = Botification.extractTextFromNotification(this, not);
+		Botification bot = new Botification(0, event.getPackageName().toString(), "", description, text);
+		i.putExtra("botification", bot);
+		sendBroadcast(i);		
 	}
 
 	
@@ -50,8 +52,7 @@ public class BotifierAccessibilityService extends AccessibilityService implement
 	        if (notification == null) {
 	        	return;
 	        }
-	        Botification not = new Botification(notification, 0, event.getPackageName().toString(), "");
-	        sendCmd(not, BotifierManager.CMD_NOTIFICATION_ADDED);
+	        sendCmd(event, notification, BotifierManager.CMD_NOTIFICATION_ADDED);
 	      }
     } 
 
