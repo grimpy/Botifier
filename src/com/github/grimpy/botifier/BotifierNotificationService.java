@@ -2,6 +2,8 @@ package com.github.grimpy.botifier;
 
 
 import android.annotation.TargetApi;
+import android.app.Notification;
+import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
@@ -31,10 +33,21 @@ public class BotifierNotificationService extends NotificationListenerService imp
 	    			cmd = BotifierManager.CMD_NOTIFICATION_REMOVED;
 	    		}
 	    		StatusBarNotification stn = (StatusBarNotification)msg.obj;
-	    		Intent i = new Intent(cmd);
-	    		String description = stn.getNotification().tickerText.toString();
-	    		String text = Botification.extractTextFromNotification(BotifierNotificationService.this, stn.getNotification());
+	    		if (stn == null) {
+	    			return;
+	    		}
+	    		Notification not = stn.getNotification();
+	    		if (not == null) {
+	    			return;
+	    		}
+	    		String description = "";
+	    		if (not.tickerText != null) {
+	    			description = not.tickerText.toString();
+	    		}
+	    		Service srv = BotifierNotificationService.this;
+	    		String text = Botification.extractTextFromNotification(srv, not);
 	    		Botification bot = new Botification(stn.getId(), stn.getPackageName(), stn.getTag(), description, text);
+	    		Intent i = new Intent(cmd);
 	    		i.putExtra("botification", bot);
 	    		sendBroadcast(i);
 	    		//Looper.myLooper().quit();
