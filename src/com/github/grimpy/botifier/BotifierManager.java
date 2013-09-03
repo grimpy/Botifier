@@ -180,8 +180,10 @@ public class BotifierManager implements OnInitListener {
     
     private void resetNotify(boolean close) {
         if (close) {
-        	mRemoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
-        	mAudioManager.unregisterRemoteControlClient(mRemoteControlClient);
+        	if (mRemoteControlClient != null) {
+        		mRemoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
+        		mAudioManager.unregisterRemoteControlClient(mRemoteControlClient);
+        	}
         	mAudioManager.abandonAudioFocus(mAudioFocusListener);
             mAudioManager.unregisterMediaButtonEventReceiver(mMediaButtonReceiverComponent);
         } else {
