@@ -38,7 +38,10 @@ public class BotifierAccessibilityService extends AccessibilityService implement
 	
 	private void sendCmd(AccessibilityEvent event, Notification not, String cmd) {
 		Intent i = new Intent(cmd);
-		String description = not.tickerText.toString();
+		String description = "";
+		if (not.tickerText != null) {
+			not.tickerText.toString();
+		}
 		String text = Botification.extractTextFromNotification(this, not);
 		Botification bot = new Botification(0, event.getPackageName().toString(), "", description, text);
 		i.putExtra("botification", bot);
