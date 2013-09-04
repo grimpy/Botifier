@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -166,7 +167,9 @@ class Botification implements Parcelable {
     
     public static String extractTextFromNotification(Service service, Notification notification) {
     	ArrayList<String> result = null;
-	    result =  extractTextFromNotification(service, notification.bigContentView);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            result =  extractTextFromNotification(service, notification.bigContentView);
+        }
 	    if (result == null) {
 	    	result = extractTextFromNotification(service, notification.contentView);
 	    }
