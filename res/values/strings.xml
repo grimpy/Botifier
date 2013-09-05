@@ -7,6 +7,8 @@
     <string name="persistent_notification_desc">Process persistent notifications</string>
     <string name="applications">Application Black List</string>
     <string name="metadata_display">Device display</string>
+    <string name="timeout">Timeout</string>
+    <string name="timeout_desc">Time in seconds when to automatically clear notification.</string>
     <string name="filters">Filters</string>
     <string name="blacklist">Text Black List</string>
     <string name="blacklist_add">Add Black List</string>

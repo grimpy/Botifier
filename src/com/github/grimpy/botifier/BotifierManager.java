@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -18,9 +19,13 @@ import android.media.MediaMetadataRetriever;
 import android.media.RemoteControlClient;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.RemoteControlClient.MetadataEditor;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
+import android.service.notification.StatusBarNotification;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -36,21 +41,21 @@ public class BotifierManager implements OnInitListener {
 	private SharedPreferences mSharedPref;
 	private RemoteControlClient mRemoteControlClient;
 	private AudioManager mAudioManager;
+	private int HANDLER_WHAT_CLEAR = 1;
+
 	private ComponentName mMediaButtonReceiverComponent;
 	private ArrayList<Botification> mNotifications;
 	private int mCurrent = -1;
 	private int mAudiofocus = -1;
 	private TextToSpeech mTTS;
 	private Service mService;
+	private Handler mHandler;
 
     public BotifierManager(Service serv) {
     	mService = serv;
         mAudioManager = (AudioManager) mService.getSystemService(Context.AUDIO_SERVICE);
         mMediaButtonReceiverComponent = new ComponentName(mService.getPackageName(), MediaButtonIntentReceiver.class.getName());
-    	mAudioManager.registerMediaButtonEventReceiver(mMediaButtonReceiverComponent);
-		// build the PendingIntent for the remote control client
-		//setUpRemoteControlClient();
-		
+    	mAudioManager.registerMediaButtonEventReceiver(mMediaButtonReceiverComponent);		
 		mNotifications = new ArrayList<Botification>();
 		mTTS = new TextToSpeech(mService, this);
 		
@@ -62,6 +67,11 @@ public class BotifierManager implements OnInitListener {
         // Attach the broadcast listener
         mService.registerReceiver(mIntentReceiver, filter);
         mSharedPref = PreferenceManager.getDefaultSharedPreferences(mService);
+        mHandler = new Handler(){
+	    	public void handleMessage(Message msg){
+	    		resetNotify(true);
+		    }       
+		};
 	}
 
 
@@ -152,6 +162,14 @@ public class BotifierManager implements OnInitListener {
     	}
     }
     
+	private int getTimeout() {
+		String timeout = mSharedPref.getString(Constants.PREF_TIMEOUT, "");
+		if (!TextUtils.isEmpty(timeout)){
+			return Integer.valueOf(timeout);
+		}
+		return 0;
+	}
+    
     private void showNotify(int offset){
     	showNotify(offset, false);
     }
@@ -218,6 +236,11 @@ public class BotifierManager implements OnInitListener {
 		edit.putLong(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER, tracknr);
         edit.putLong(MediaMetadataRetriever.METADATA_KEY_DURATION, 10);
 		edit.apply();
+		int timeout = getTimeout();
+		if (timeout != 0) {
+			mHandler.removeMessages(HANDLER_WHAT_CLEAR);
+			mHandler.sendEmptyMessageDelayed(HANDLER_WHAT_CLEAR, timeout * 1000);
+		}
 	}
 	
     private void setUpRemoteControlClient() {

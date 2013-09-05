@@ -5,6 +5,12 @@
             android:key="persistant_notification"
             android:summary="@string/persistent_notification_desc"
             android:defaultValue="false"/>
+        <EditTextPreference android:numeric="integer"
+	        			android:key="timeout"
+	        			android:dialogTitle="@string/timeout"
+	        			android:summary="@string/timeout_desc"
+	        			android:title="@string/timeout"/>
+     	
     </PreferenceCategory>
     <PreferenceScreen android:title="@string/category_tts">
         <CheckBoxPreference android:title="@string/action_tts"
