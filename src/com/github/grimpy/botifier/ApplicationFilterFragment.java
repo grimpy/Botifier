@@ -74,9 +74,6 @@ public class ApplicationFilterFragment extends PreferenceFragment {
         float[] matrix = colorMatrix.getArray();
         matrix[18] = 0.5f;
         mGrayscaleFilter = new ColorMatrixColorFilter(colorMatrix);
-
-		
-		setHasOptionsMenu(true);
 		addPreferencesFromResource(R.xml.blacklist_preference);
 		mBlackList = (PreferenceCategory) findPreference("blacklist");
 		mBlackList.setTitle(R.string.applications);
