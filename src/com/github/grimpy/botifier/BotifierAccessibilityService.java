@@ -52,10 +52,11 @@ public class BotifierAccessibilityService extends AccessibilityService implement
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		if (event.getEventType() == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED) {
 			Notification notification = (Notification) event.getParcelableData();
-	        if (notification == null) {
+			if (notification == null || !mBotifyManager.isIntresting(notification)) {
 	        	return;
 	        }
-	        sendCmd(event, notification, BotifierManager.CMD_NOTIFICATION_ADDED);
+			boolean isongoing = (notification.flags & Notification.FLAG_ONGOING_EVENT) == 1;
+			sendCmd(event, notification, BotifierManager.CMD_NOTIFICATION_ADDED);
 	      }
     } 
 

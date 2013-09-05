@@ -33,7 +33,7 @@ public class BotifierNotificationService extends NotificationListenerService imp
 	    			cmd = BotifierManager.CMD_NOTIFICATION_REMOVED;
 	    		}
 	    		StatusBarNotification stn = (StatusBarNotification)msg.obj;
-	    		if (stn == null) {
+	    		if (stn == null || !mBotifyManager.isIntresting(stn.getNotification())) {
 	    			return;
 	    		}
 	    		Notification not = stn.getNotification();
@@ -60,13 +60,6 @@ public class BotifierNotificationService extends NotificationListenerService imp
 		super.onDestroy();
 		mBotifyManager.destroy();
 	}
-	
-	public void sendCmd(final StatusBarNotification stn, final String cmd){
-		mHandler.sendEmptyMessage(0);
-		Looper.loop();
-		Looper.myLooper().quitSafely();
-	}
-
 	
 	@Override
 	public void onNotificationPosted(StatusBarNotification statusnotification) {

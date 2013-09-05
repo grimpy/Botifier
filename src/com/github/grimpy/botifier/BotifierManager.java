@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -31,7 +32,6 @@ public class BotifierManager implements OnInitListener {
 	public static final String CMD_NOTIFICATION_ADDED = "com.github.grimpy.botifier.notification.added";
 	public static final String CMD_NOTIFICATION_REMOVED = "com.github.grimpy.botifier.notification.removed"; 
 	
-	private boolean isInit = false;
 	private static String TAG = "Botifier";
 	private SharedPreferences mSharedPref;
 	private RemoteControlClient mRemoteControlClient;
@@ -45,9 +45,6 @@ public class BotifierManager implements OnInitListener {
 
     public BotifierManager(Service serv) {
     	mService = serv;
-	    if (isInit) {
-	        return;
-	    }
         mAudioManager = (AudioManager) mService.getSystemService(Context.AUDIO_SERVICE);
         mMediaButtonReceiverComponent = new ComponentName(mService.getPackageName(), MediaButtonIntentReceiver.class.getName());
     	mAudioManager.registerMediaButtonEventReceiver(mMediaButtonReceiverComponent);
@@ -65,10 +62,14 @@ public class BotifierManager implements OnInitListener {
         // Attach the broadcast listener
         mService.registerReceiver(mIntentReceiver, filter);
         mSharedPref = PreferenceManager.getDefaultSharedPreferences(mService);
-	    isInit = true;
 	}
 
 
+    public boolean isIntresting(Notification not) {
+    	boolean isongoing = (not.flags & Notification.FLAG_ONGOING_EVENT) != 0;
+    	boolean wantongoing = mSharedPref.getBoolean("persistent_notification", false);
+    	return (wantongoing || !isongoing);
+    }
 		
 	
     private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
@@ -212,7 +213,7 @@ public class BotifierManager implements OnInitListener {
 		MetadataEditor edit = mRemoteControlClient.editMetadata(true);
 		edit.putString(MediaMetadataRetriever.METADATA_KEY_TITLE, title);
 		edit.putString(MediaMetadataRetriever.METADATA_KEY_ARTIST, artist);
-		edit.putString(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST, artist);	
+		edit.putString(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST, artist);
 		edit.putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, album);
 		edit.putLong(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER, tracknr);
         edit.putLong(MediaMetadataRetriever.METADATA_KEY_DURATION, 10);
@@ -286,7 +287,6 @@ public class BotifierManager implements OnInitListener {
 		Log.d(TAG, "Service interrupted");
 		mAudiofocus = -1;
 		mAudioManager.abandonAudioFocus(mAudioFocusListener);
-	    isInit = false;
 	}
 	
 	public void notificationAdded(Botification notification) {

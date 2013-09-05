@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceCategory android:title="@string/category_tts">
+    <PreferenceCategory android:title="@string/general">
+        <CheckBoxPreference android:title="@string/persistent_notification"
+            android:key="persistant_notification"
+            android:summary="persistent_notification_desc"
+            android:defaultValue="false"/>
+    </PreferenceCategory>
+    <PreferenceScreen android:title="@string/category_tts">
         <CheckBoxPreference android:title="@string/action_tts"
             android:key="action_tts"
             android:summary="@string/action_tts_desc"
@@ -15,9 +21,9 @@
             android:summary="@string/bt_only_desc_tts"
             android:defaultValue="true" />
    	        
-	</PreferenceCategory>
+	</PreferenceScreen>
     
-    <PreferenceCategory android:title="@string/metadata_display">
+    <PreferenceScreen android:title="@string/metadata_display">
 	    <ListPreference android:entries="@array/metadata_fields"
 	        			android:key="metadata_artist"
 	                    android:entryValues="@array/metadata_fields_values"
@@ -43,7 +49,7 @@
             android:summary="@string/bt_only_desc_meta"
             android:defaultValue="true" />
 	        
-    </PreferenceCategory>
+    </PreferenceScreen>
     <PreferenceCategory android:title="@string/filters">
     	<Preference android:title="@string/blacklist" android:key="blacklist"/>
     </PreferenceCategory>

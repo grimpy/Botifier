@@ -2,6 +2,9 @@
 <resources>
 
     <string name="app_name">Botifier</string>
+    <string name="general">General</string>
+    <string name="persistent_notification">Process persistent</string>
+    <string name="persistent_notification_desc">Process persistent notifications</string>
     <string name="metadata_display">Device display</string>
     <string name="filters">Filters</string>
     <string name="blacklist">Black List</string>
