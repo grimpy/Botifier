@@ -5,9 +5,10 @@
     <string name="general">General</string>
     <string name="persistent_notification">Process persistent</string>
     <string name="persistent_notification_desc">Process persistent notifications</string>
+    <string name="applications">Application Black List</string>
     <string name="metadata_display">Device display</string>
     <string name="filters">Filters</string>
-    <string name="blacklist">Black List</string>
+    <string name="blacklist">Text Black List</string>
     <string name="blacklist_add">Add Black List</string>
     <string name="blacklist_edit">Edit Black List</string>
     <string name="blacklist_desc">Example: To hide notifcations containing the word \"car\", enter \"*car*\".</string>

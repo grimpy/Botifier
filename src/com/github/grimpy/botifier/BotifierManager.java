@@ -256,8 +256,9 @@ public class BotifierManager implements OnInitListener {
     };
     
         
-    private boolean isBlackListed(String txt) {
-    	Set<String> blacklist = mSharedPref.getStringSet("blacklistentries", null);
+    private boolean isBlackListed(Botification botification) {
+    	String txt = botification.mText;
+    	Set<String> blacklist = mSharedPref.getStringSet(Constants.SHARED_BLACKLIST, null);
     	if (blacklist != null) {
     		for (String entry : blacklist) {
     			entry = entry.replace(".", "\\.").replace("*", ".*");
@@ -268,6 +269,15 @@ public class BotifierManager implements OnInitListener {
 				}
 			}
     	}
+    	Set<String> appblacklist = mSharedPref.getStringSet(Constants.PREF_BLOCKED_APPLIST, null);
+    	if (appblacklist != null) {
+    		for (String entry : appblacklist) {
+    			if (entry.equals(botification.mPkg)) {
+    				return true;
+    			}
+			}
+    	}
+    	
     	return false;
     }
     
@@ -290,7 +300,7 @@ public class BotifierManager implements OnInitListener {
 	}
 	
 	public void notificationAdded(Botification notification) {
-		if (isBlackListed(notification.mText)) {
+		if (isBlackListed(notification)) {
 			return;
 		}
         addNotification(notification);

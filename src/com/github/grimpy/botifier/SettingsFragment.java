@@ -83,7 +83,11 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 				 getFragmentManager().beginTransaction()
 	                .replace(android.R.id.content, new BlackListFragment()).addToBackStack(null)
 	                .commit();
-			}
+			} else if (prefkey.equals("filter_applications")) {
+			 getFragmentManager().beginTransaction()
+               .replace(android.R.id.content, new ApplicationFilterFragment()).addToBackStack(null)
+               .commit();
+		}
 		}
 		return true;
 	}

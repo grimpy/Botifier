@@ -3,7 +3,7 @@
     <PreferenceCategory android:title="@string/general">
         <CheckBoxPreference android:title="@string/persistent_notification"
             android:key="persistant_notification"
-            android:summary="persistent_notification_desc"
+            android:summary="@string/persistent_notification_desc"
             android:defaultValue="false"/>
     </PreferenceCategory>
     <PreferenceScreen android:title="@string/category_tts">
@@ -52,6 +52,7 @@
     </PreferenceScreen>
     <PreferenceCategory android:title="@string/filters">
     	<Preference android:title="@string/blacklist" android:key="blacklist"/>
+    	<Preference android:title="@string/applications" android:key="filter_applications"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/debug">
         <Preference android:title="@string/action_makenotification"
