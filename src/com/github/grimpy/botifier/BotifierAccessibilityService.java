@@ -55,7 +55,6 @@ public class BotifierAccessibilityService extends AccessibilityService implement
 			if (notification == null || !mBotifyManager.isIntresting(notification)) {
 	        	return;
 	        }
-			boolean isongoing = (notification.flags & Notification.FLAG_ONGOING_EVENT) == 1;
 			sendCmd(event, notification, BotifierManager.CMD_NOTIFICATION_ADDED);
 	      }
     } 

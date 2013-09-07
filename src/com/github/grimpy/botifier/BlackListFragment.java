@@ -33,9 +33,9 @@ public class BlackListFragment extends PreferenceFragment {
 		super.onCreate(savedInstanceState);
 		mSharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		setHasOptionsMenu(true);
-		addPreferencesFromResource(R.xml.blacklist_preference);
-		mBlackList = (PreferenceCategory) findPreference(Constants.PREF_BLACKLIST);
-		Set<String> entries = mSharedPref.getStringSet(Constants.SHARED_BLACKLIST, null);
+		addPreferencesFromResource(R.xml.list_preference);
+		mBlackList = (PreferenceCategory) findPreference(getString(R.string.cat_filterlist));
+		Set<String> entries = mSharedPref.getStringSet(getString(R.string.pref_blacklist), null);
 		if (entries == null) {
 			mBlackListEntries = new HashSet<String>();
 		} else {
@@ -57,7 +57,7 @@ public class BlackListFragment extends PreferenceFragment {
         mBlackList.addPreference(pref);
         mBlackListEntries.add(black);
         Editor editor = mSharedPref.edit();
-        editor.putStringSet("blacklistentries", mBlackListEntries);
+        editor.putStringSet(getString(R.string.pref_blacklist), mBlackListEntries);
         editor.apply();
 	}
 	
@@ -65,7 +65,7 @@ public class BlackListFragment extends PreferenceFragment {
 		mBlackList.removePreference(pref);
 		mBlackListEntries.remove(pref.getTitle());
 		Editor editor = mSharedPref.edit();
-        editor.putStringSet("blacklistentries", mBlackListEntries);
+        editor.putStringSet(getString(R.string.pref_blacklist), mBlackListEntries);
         editor.apply();
 	}
 	
@@ -81,7 +81,7 @@ public class BlackListFragment extends PreferenceFragment {
 			newlist.set(idx, value);
 			mBlackListEntries = new HashSet<String>(newlist);
 			Editor editor = mSharedPref.edit();
-	        editor.putStringSet("blacklistentries", mBlackListEntries);
+	        editor.putStringSet(getString(R.string.pref_blacklist), mBlackListEntries);
 	        editor.apply();
 		}
 	}
@@ -93,7 +93,7 @@ public class BlackListFragment extends PreferenceFragment {
 	    builder.setView(input);
 	    builder.setTitle(R.string.blacklist_add);
 	    builder.setMessage(R.string.blacklist_desc);
-	    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+	    builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 	        //@Override
 	        public void onClick(DialogInterface dialog, int which) {
 	            Editable value = input.getText();
@@ -116,7 +116,7 @@ public class BlackListFragment extends PreferenceFragment {
 	    builder.setView(input);
 	    builder.setTitle(R.string.blacklist_edit);
 	    builder.setMessage(R.string.blacklist_desc);
-	    builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+	    builder.setNegativeButton(R.string.delete, new DialogInterface.OnClickListener() {
 	        //@Override
 	        public void onClick(DialogInterface dialog, int which) {
 	        	deleteEntry(preference);
@@ -124,7 +124,7 @@ public class BlackListFragment extends PreferenceFragment {
 	        }
 	    });
 
-	    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+	    builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 	        //@Override
 	        public void onClick(DialogInterface dialog, int which) {
 	            Editable value = input.getText();
@@ -139,7 +139,7 @@ public class BlackListFragment extends PreferenceFragment {
 	
 	@Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		MenuItem item = menu.add("Add");
+		MenuItem item = menu.add(R.string.add);
 		item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM |
 			MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 	}

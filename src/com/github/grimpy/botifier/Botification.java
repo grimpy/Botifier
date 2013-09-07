@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 
 class Botification implements Parcelable {
+	private Service mService;
 	public String mPackageLabel;
 	public String mDescription;
 	public String mText;
@@ -32,6 +33,7 @@ class Botification implements Parcelable {
 	public int mOffset;
 	public String mTag;
 	public boolean mRead;
+	
 	private static String TAG = "Botifier";
 	private static final int TIMESTAMPID = 16908388;
 	
@@ -87,13 +89,14 @@ class Botification implements Parcelable {
 
 	
 	public void load(Service service) {
+		mService = service;
 		mPackageLabel = getPackageLabel(service, mPkg);
 		mSharedPref = PreferenceManager.getDefaultSharedPreferences(service);
 	    
 	}
 	
 	private int getMaxLength() {
-		String maxLength = mSharedPref.getString("maxlength", "");
+		String maxLength = mSharedPref.getString(mService.getString(R.string.pref_timeout), "");
 		if (!TextUtils.isEmpty(maxLength)){
 			return Integer.valueOf(maxLength);
 		}
@@ -153,7 +156,7 @@ class Botification implements Parcelable {
 		return false;
 	}
 	
-    private static void extractViewType(ArrayList<View> outViews, Class viewtype, View source) {
+    private static void extractViewType(ArrayList<View> outViews, Class<TextView> viewtype, View source) {
     	if (ViewGroup.class.isInstance(source)) {
     		ViewGroup vg = (ViewGroup) source;
     		for (int i = 0; i < vg.getChildCount(); i++) {

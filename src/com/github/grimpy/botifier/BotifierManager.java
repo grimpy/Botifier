@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -22,7 +21,6 @@ import android.media.RemoteControlClient.MetadataEditor;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.service.notification.StatusBarNotification;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.text.TextUtils;
@@ -116,16 +114,7 @@ public class BotifierManager implements OnInitListener {
         		notificationAdded(bot);        		
         	} else if (intent.getAction().equals(CMD_NOTIFICATION_REMOVED)) {
         		Botification not_todelete = intent.getParcelableExtra("notification");
-        		for (int i = mNotifications.size() -1; i >=0 ; i--) {
-        			Botification not = mNotifications.get(i);
-    				if (not.equals(not_todelete)) {
-    					removeNotification();
-    				} else {
-    					removeNotification(not);
-    				}
-    				return;
-        				
-    			}
+				removeNotification(not_todelete);
         	}
         }
     };
@@ -163,7 +152,7 @@ public class BotifierManager implements OnInitListener {
     }
     
 	private int getTimeout() {
-		String timeout = mSharedPref.getString(Constants.PREF_TIMEOUT, "");
+		String timeout = mSharedPref.getString(mService.getString(R.string.pref_timeout), "");
 		if (!TextUtils.isEmpty(timeout)){
 			return Integer.valueOf(timeout);
 		}
@@ -281,7 +270,7 @@ public class BotifierManager implements OnInitListener {
         
     private boolean isBlackListed(Botification botification) {
     	String txt = botification.mText;
-    	Set<String> blacklist = mSharedPref.getStringSet(Constants.SHARED_BLACKLIST, null);
+    	Set<String> blacklist = mSharedPref.getStringSet(mService.getString(R.string.pref_blacklist), null);
     	if (blacklist != null) {
     		for (String entry : blacklist) {
     			entry = entry.replace(".", "\\.").replace("*", ".*");
@@ -292,7 +281,7 @@ public class BotifierManager implements OnInitListener {
 				}
 			}
     	}
-    	Set<String> appblacklist = mSharedPref.getStringSet(Constants.PREF_BLOCKED_APPLIST, null);
+    	Set<String> appblacklist = mSharedPref.getStringSet(mService.getString(R.string.pref_blocked_applist), null);
     	if (appblacklist != null) {
     		for (String entry : appblacklist) {
     			if (entry.equals(botification.mPkg)) {

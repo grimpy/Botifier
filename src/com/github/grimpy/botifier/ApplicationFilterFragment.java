@@ -14,25 +14,15 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.Drawable;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.widget.EditText;
 
 public class ApplicationFilterFragment extends PreferenceFragment {
 	private SharedPreferences mSharedPref;
@@ -74,10 +64,10 @@ public class ApplicationFilterFragment extends PreferenceFragment {
         float[] matrix = colorMatrix.getArray();
         matrix[18] = 0.5f;
         mGrayscaleFilter = new ColorMatrixColorFilter(colorMatrix);
-		addPreferencesFromResource(R.xml.blacklist_preference);
-		mBlackList = (PreferenceCategory) findPreference("blacklist");
+		addPreferencesFromResource(R.xml.list_preference);
+		mBlackList = (PreferenceCategory) findPreference(getString(R.string.cat_filterlist));
 		mBlackList.setTitle(R.string.applications);
-		Set<String> entries = mSharedPref.getStringSet(Constants.PREF_BLOCKED_APPLIST, null);
+		Set<String> entries = mSharedPref.getStringSet(getString(R.string.pref_blocked_applist), null);
 		if (entries == null) {
 			mBlackListEntries = new HashSet<String>();
 		} else {
@@ -92,10 +82,10 @@ public class ApplicationFilterFragment extends PreferenceFragment {
 			Drawable icon = pkg.loadIcon(mPackageManager);
 			pref.setPkgName(pkg.packageName);
 			if (mBlackListEntries.contains(pkg.packageName)) {
-				pref.setDefaultValue(true);
-			} else {
-				icon.setColorFilter(mGrayscaleFilter);
 				pref.setDefaultValue(false);
+                icon.setColorFilter(mGrayscaleFilter);
+            } else {
+				pref.setDefaultValue(true);
 			}
 			pref.setIcon(icon);
 			prefs.add(pref);
@@ -112,15 +102,15 @@ public class ApplicationFilterFragment extends PreferenceFragment {
 		if (enabled && isblacklisted) {
 			return;
 		} else if (enabled) {
-			newlist.add(pkg);
+			newlist.remove(pkg);
 		} else if (!enabled && !isblacklisted){
 			return;
 		} else if (!enabled) {
-			newlist.remove(pkg);
+			newlist.add(pkg);
 		}
 		mBlackListEntries = new HashSet<String>(newlist);
 		Editor editor = mSharedPref.edit();
-        editor.putStringSet(Constants.PREF_BLOCKED_APPLIST, mBlackListEntries);
+        editor.putStringSet(getString(R.string.pref_blocked_applist), mBlackListEntries);
         editor.apply();
 	}
 	
@@ -128,7 +118,7 @@ public class ApplicationFilterFragment extends PreferenceFragment {
 		AppPreference pref = (AppPreference) preference;
 		editEntry(pref.getPkgName(), pref.isChecked());
 		Drawable icon = pref.getIcon();
-		if (pref.isChecked()) {
+		if (!pref.isChecked()) {
 			icon.setColorFilter(null);
 		} else {
 			icon.setColorFilter(mGrayscaleFilter);

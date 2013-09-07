@@ -45,10 +45,10 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 			String value = mSharedPref.getString(prefkey, "");
 			setSummary(prefkey, value);
 		}
-		boolean tts = mSharedPref.getBoolean("action_tts", false);
-		Preference pref = findPreference("tts_value");
+		boolean tts = mSharedPref.getBoolean(getString(R.string.action_tts), false);
+		Preference pref = findPreference(getString(R.string.pref_tts_value));
 		pref.setEnabled(tts);
-		pref = findPreference("tts_bt_only");
+		pref = findPreference(getString(R.string.pref_tts_bt_only));
 		pref.setEnabled(tts);
 		
 	}
@@ -63,11 +63,12 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 		pref.setSummary(value.replace("%", "%%"));
 	}
 	
+	@SuppressWarnings("deprecation")
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 		String prefkey = preference.getKey();
 		if (prefkey != null) {
 			
-			if (prefkey.equals("action_makenotification") ) {
+			if (prefkey.equals(getString(R.string.action_makenotification)) ) {
 	            NotificationManager nManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
 	            NotificationCompat.Builder ncomp = new NotificationCompat.Builder(getActivity());
 	            ncomp.setContentTitle("My Notification");
@@ -79,11 +80,11 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 	            ncomp.setSound(alarmSound);
 	            nManager.notify((int)System.currentTimeMillis(),ncomp.build());
 
-			} else if (prefkey.equals("blacklist")) {
+			} else if (prefkey.equals(getString(R.string.action_blacklist))) {
 				 getFragmentManager().beginTransaction()
 	                .replace(android.R.id.content, new BlackListFragment()).addToBackStack(null)
 	                .commit();
-			} else if (prefkey.equals("filter_applications")) {
+			} else if (prefkey.equals(getString(R.string.action_filter_applications))) {
 			 getFragmentManager().beginTransaction()
                .replace(android.R.id.content, new ApplicationFilterFragment()).addToBackStack(null)
                .commit();
@@ -95,13 +96,13 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 	@Override
 	public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences,
 			final String key) {
-		if (key.equals("blacklistentries") || key.equals("tts_bt_only")) {
+		if (key.equals(getString(R.string.pref_blacklist)) || key.equals(getString(R.string.pref_tts_bt_only))) {
 			return;
-		} else if (key.equals("action_tts")) {
-			boolean tts = sharedPreferences.getBoolean("action_tts", false);
-			Preference pref = findPreference("tts_value");
+		} else if (key.equals(getString(R.string.pref_enable_tts))) {
+			boolean tts = sharedPreferences.getBoolean(getString(R.string.pref_enable_tts), false);
+			Preference pref = findPreference(getString(R.string.pref_tts_value));
 			pref.setEnabled(tts);
-			pref = findPreference("tts_bt_only");
+			pref = findPreference(getString(R.string.pref_tts_bt_only));
 			pref.setEnabled(tts);
 			return;
 		}

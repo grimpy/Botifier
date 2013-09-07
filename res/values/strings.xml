@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Botifier</string>
+    <string name="delete">Delete</string>
+    <string name="add">Add</string>
     <string name="general">General</string>
     <string name="persistent_notification">Process persistent</string>
     <string name="persistent_notification_desc">Process persistent notifications</string>
-    <string name="applications">Application Black List</string>
+    <string name="applications">Application White List</string>
+    <string name="applications_desc">Applications which notifications will be shown</string>
     <string name="metadata_display">Device display</string>
     <string name="timeout">Timeout</string>
     <string name="timeout_desc">Time in seconds when to automatically clear notification.</string>
@@ -31,7 +33,7 @@
     <string name="maxlength">Max Length</string>
     <string name="maxlength_desc">Maximum length of text displayed</string>
     <string name="debug">Debug</string>
-    <string name="action_makenotification">Test Notification</string>
+    <string name="makenotification">Test Notification</string>
     <string name="custom_title">Enter custom text</string>
     <string name="custom_description">Usage:\n\n
 %f: Full Notification\n

@@ -6,13 +6,10 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
-
-
 
 @TargetApi(18)
 public class BotifierNotificationService extends NotificationListenerService implements NotificationInterface{
