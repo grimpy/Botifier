@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <PreferenceCategory android:title="@string/general">
         <CheckBoxPreference android:title="@string/persistent_notification"
-            android:key="persistent_notification"
+            android:key="@string/pref_persistent_notification"
             android:summary="@string/persistent_notification_desc"
             android:defaultValue="false"/>
         <EditTextPreference android:numeric="integer"
@@ -14,7 +14,7 @@
     </PreferenceCategory>
     <PreferenceScreen android:title="@string/category_tts">
         <CheckBoxPreference android:title="@string/action_tts"
-            android:key="@string/pref_enable_tts"
+            android:key="@string/pref_tts_enabled"
             android:summary="@string/action_tts_desc"
             android:defaultValue="false" />
    	    <ListPreference android:entries="@array/metadata_fields"

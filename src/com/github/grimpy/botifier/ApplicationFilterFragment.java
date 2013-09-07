@@ -102,11 +102,11 @@ public class ApplicationFilterFragment extends PreferenceFragment {
 		if (enabled && isblacklisted) {
 			return;
 		} else if (enabled) {
-			newlist.remove(pkg);
+			newlist.add(pkg);
 		} else if (!enabled && !isblacklisted){
 			return;
 		} else if (!enabled) {
-			newlist.add(pkg);
+			newlist.remove(pkg);
 		}
 		mBlackListEntries = new HashSet<String>(newlist);
 		Editor editor = mSharedPref.edit();
@@ -114,11 +114,14 @@ public class ApplicationFilterFragment extends PreferenceFragment {
         editor.apply();
 	}
 	
-	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, final Preference preference) {
+	public boolean onPreferenceTreeClicked(PreferenceScreen preferenceScreen, final Preference preference) {
+        if (!isAdded()) {
+            return false;
+        }
 		AppPreference pref = (AppPreference) preference;
-		editEntry(pref.getPkgName(), pref.isChecked());
+		editEntry(pref.getPkgName(), !pref.isChecked());
 		Drawable icon = pref.getIcon();
-		if (!pref.isChecked()) {
+		if (pref.isChecked()) {
 			icon.setColorFilter(null);
 		} else {
 			icon.setColorFilter(mGrayscaleFilter);

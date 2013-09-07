@@ -75,7 +75,7 @@ public class BotifierManager implements OnInitListener {
 
     public boolean isIntresting(Notification not) {
     	boolean isongoing = (not.flags & Notification.FLAG_ONGOING_EVENT) != 0;
-    	boolean wantongoing = mSharedPref.getBoolean("persistent_notification", false);
+    	boolean wantongoing = mSharedPref.getBoolean(_(R.string.pref_persistent_notification), false);
     	return (wantongoing || !isongoing);
     }
 		
@@ -113,14 +113,14 @@ public class BotifierManager implements OnInitListener {
         		bot.load(mService);
         		notificationAdded(bot);        		
         	} else if (intent.getAction().equals(CMD_NOTIFICATION_REMOVED)) {
-        		Botification not_todelete = intent.getParcelableExtra("notification");
+        		Botification not_todelete = intent.getParcelableExtra("botification");
 				removeNotification(not_todelete);
         	}
         }
     };
     
     private boolean isActive() {
-    	return mAudioManager.isBluetoothA2dpOn() || !mSharedPref.getBoolean("metadata_bt_only", true);
+    	return mAudioManager.isBluetoothA2dpOn() || !mSharedPref.getBoolean(_(R.string.pref_metadata_bt_only), true);
     }
     
     private void removeNotification() {
@@ -198,19 +198,23 @@ public class BotifierManager implements OnInitListener {
             showNotify("Botifier", "Botifier", "Botifier", 0);
         }
     }
+
+    private String _(int id){
+        return mService.getString(id);
+    }
 	
 	public void showNotify(Botification notify) {
 		Log.d(TAG, "Setting notification " + notify.toString());
 		mCurrent = mNotifications.indexOf(notify);
-		if (mSharedPref.getBoolean("action_tts", false) && !notify.mRead &&
-				(mAudioManager.isBluetoothA2dpOn() || !mSharedPref.getBoolean("tts_bt_only", true))) {
-			String txt = notify.getPreference("tts_value", true);
+		if (mSharedPref.getBoolean(_(R.string.pref_tts_enabled), false) && !notify.mRead &&
+				(mAudioManager.isBluetoothA2dpOn() || !mSharedPref.getBoolean(_(R.string.pref_tts_bt_only), true))) {
+			String txt = notify.getPreference(_(R.string.pref_tts_value), true);
         	mTTS.speak(txt, TextToSpeech.QUEUE_FLUSH, null);
         	notify.mRead = true;
         }
 		if (isActive()) {
 			Log.d(TAG, "Setting Metadata");
-	        showNotify(notify.getPreference("metadata_artist"), notify.getPreference("metadata_album"), notify.getPreference("metadata_title"), 1);
+	        showNotify(notify.getPreference(_(R.string.pref_metadata_artist)), notify.getPreference(_(R.string.pref_metadata_album)), notify.getPreference(_(R.string.pref_metadata_title)), 1);
 		}
 	}
 	
@@ -270,7 +274,7 @@ public class BotifierManager implements OnInitListener {
         
     private boolean isBlackListed(Botification botification) {
     	String txt = botification.mText;
-    	Set<String> blacklist = mSharedPref.getStringSet(mService.getString(R.string.pref_blacklist), null);
+    	Set<String> blacklist = mSharedPref.getStringSet(_(R.string.pref_blacklist), null);
     	if (blacklist != null) {
     		for (String entry : blacklist) {
     			entry = entry.replace(".", "\\.").replace("*", ".*");
@@ -281,7 +285,7 @@ public class BotifierManager implements OnInitListener {
 				}
 			}
     	}
-    	Set<String> appblacklist = mSharedPref.getStringSet(mService.getString(R.string.pref_blocked_applist), null);
+    	Set<String> appblacklist = mSharedPref.getStringSet(_(R.string.pref_blocked_applist), null);
     	if (appblacklist != null) {
     		for (String entry : appblacklist) {
     			if (entry.equals(botification.mPkg)) {

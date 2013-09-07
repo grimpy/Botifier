@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="pref_persistent_notification">persistent_notification</string>
 	<string name="pref_timeout">timeout</string>
-	<string name="pref_enable_tts">action_tts</string>
+	<string name="pref_tts_enabled">action_tts</string>
 	<string name="pref_tts_value">tts_value</string>
 	<string name="pref_tts_bt_only">tts_bt_only</string>
 	

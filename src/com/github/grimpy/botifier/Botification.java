@@ -96,7 +96,7 @@ class Botification implements Parcelable {
 	}
 	
 	private int getMaxLength() {
-		String maxLength = mSharedPref.getString(mService.getString(R.string.pref_timeout), "");
+		String maxLength = mSharedPref.getString(mService.getString(R.string.pref_maxlength), "");
 		if (!TextUtils.isEmpty(maxLength)){
 			return Integer.valueOf(maxLength);
 		}
@@ -123,7 +123,7 @@ class Botification implements Parcelable {
 		message = message.replace("%d", mDescription);
 		message = message.replace("%m", mText);
 		
-		if (!full) {
+		if (!full && key.equals(mService.getString(R.string.pref_metadata_title))) {
 			if (maxlength != 0 && message.length() > maxlength) {
 				int start = mOffset * maxlength;
 				int end = start + maxlength;
