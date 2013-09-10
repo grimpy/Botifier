@@ -109,9 +109,13 @@ public class BotifierManager implements OnInitListener {
 		                break;
 	            }
         	} else if (intent.getAction().equals(CMD_NOTIFICATION_ADDED)) {
-        		Botification bot = intent.getParcelableExtra("botification");
-        		bot.load(mService);
-        		notificationAdded(bot);        		
+                Botification bot = intent.getParcelableExtra("botification");
+                bot.load(mService);
+                speakBotification(bot);
+                if (!isActive()) {
+                    return;
+                }
+        		notificationAdded(bot);
         	} else if (intent.getAction().equals(CMD_NOTIFICATION_REMOVED)) {
         		Botification not_todelete = intent.getParcelableExtra("botification");
 				removeNotification(not_todelete);
@@ -208,16 +212,19 @@ public class BotifierManager implements OnInitListener {
     private String _(int id){
         return mService.getString(id);
     }
+
+
+    private void speakBotification(Botification bot){
+        if (mSharedPref.getBoolean(_(R.string.pref_tts_enabled), false) &&
+                (mAudioManager.isBluetoothA2dpOn() || !mSharedPref.getBoolean(_(R.string.pref_tts_bt_only), true))) {
+            String txt = bot.getPreference(_(R.string.pref_tts_value), true);
+            mTTS.speak(txt, TextToSpeech.QUEUE_FLUSH, null);
+        }
+    }
 	
 	public void showNotify(Botification notify) {
 		Log.d(TAG, "Setting notification " + notify.toString());
 		mCurrent = mNotifications.indexOf(notify);
-		if (mSharedPref.getBoolean(_(R.string.pref_tts_enabled), false) && !notify.mRead &&
-				(mAudioManager.isBluetoothA2dpOn() || !mSharedPref.getBoolean(_(R.string.pref_tts_bt_only), true))) {
-			String txt = notify.getPreference(_(R.string.pref_tts_value), true);
-        	mTTS.speak(txt, TextToSpeech.QUEUE_FLUSH, null);
-        	notify.mRead = true;
-        }
 		if (isActive()) {
 			Log.d(TAG, "Setting Metadata");
 	        showNotify(notify.getPreference(_(R.string.pref_metadata_artist)), notify.getPreference(_(R.string.pref_metadata_album)), notify.getPreference(_(R.string.pref_metadata_title)), 1);

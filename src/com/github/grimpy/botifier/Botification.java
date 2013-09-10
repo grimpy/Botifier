@@ -32,8 +32,7 @@ class Botification implements Parcelable {
     
 	public int mOffset;
 	public String mTag;
-	public boolean mRead;
-	
+
 	private static String TAG = "Botifier";
 	private static final int TIMESTAMPID = 16908388;
 	
@@ -70,7 +69,6 @@ class Botification implements Parcelable {
 		mPkg = pkg;
 		mTag = tag;
 		mOffset = 0;
-		mRead = false;
 		mDescription = description;
 		mText = text;
 	}
