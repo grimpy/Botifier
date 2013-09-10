@@ -147,13 +147,17 @@ class Botification implements Parcelable {
 	public boolean equals(Object o) {
 		if (Botification.class.isInstance(o)) {
 			Botification not = (Botification) o;
-			if (not.mTag == mTag &&
-			    not.mPkg == mPkg &&
-			    not.mId == mId) {
-				return true;
-			}
+            if (!(mTag == not.mTag || (mTag != null && mTag.equals(not.mTag)))) {
+                return false;
+            }
+            if (!(mPkg == not.mPkg || (mPkg != null && mPkg.equals(not.mPkg)))) {
+                return false;
+            }
+            if (mId != not.mId) {
+                return false;
+            }
 		}
-		return false;
+		return true;
 	}
 	
     private static void extractViewType(ArrayList<View> outViews, Class<TextView> viewtype, View source) {

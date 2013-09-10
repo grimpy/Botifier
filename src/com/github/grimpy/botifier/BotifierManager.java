@@ -135,7 +135,13 @@ public class BotifierManager implements OnInitListener {
     private void removeNotification(Botification old) {
     	
     	((NotificationInterface)mService).cancelNotification(old);
-    	mNotifications.remove(old);
+        for (Botification bot: mNotifications) {
+            if (bot.equals(old)){
+                Log.d(TAG, "Notification found and remove");
+                mNotifications.remove(bot);
+                break;
+            }
+        }
     	if (mNotifications.size() == 0) {
     		mCurrent = -1;
     		resetNotify(true);
