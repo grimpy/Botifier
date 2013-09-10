@@ -107,7 +107,12 @@ public class BlackListFragment extends PreferenceFragment {
 	}
 
 
-	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, final Preference preference) {
+    @Override
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, final Preference preference) {
+        super.onPreferenceTreeClick(preferenceScreen, preference);
+        if (!isAdded()) {
+            return false;
+        }
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		final EditText input = new EditText(getActivity());
 		input.setText(preference.getTitle());

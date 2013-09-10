@@ -23,6 +23,9 @@ import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 public class ApplicationFilterFragment extends PreferenceFragment {
 	private SharedPreferences mSharedPref;
@@ -57,6 +60,7 @@ public class ApplicationFilterFragment extends PreferenceFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 		mSharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		mPackageManager = getActivity().getPackageManager();
         ColorMatrix colorMatrix = new ColorMatrix();
@@ -95,17 +99,46 @@ public class ApplicationFilterFragment extends PreferenceFragment {
 			mBlackList.addPreference(pref);
 		}
 	}
-	
-	private void editEntry(String pkg, boolean enabled) {
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        MenuItem item = menu.add(R.string.select_all);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        item = menu.add(R.string.select_none);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int amount = mBlackList.getPreferenceCount();
+        boolean selected = item.getTitle().equals(getString(R.string.select_all));
+        for (int i=0; i < amount; i++) {
+            AppPreference pref = (AppPreference) mBlackList.getPreference(i);
+            pref.setChecked(selected);
+            editEntry(pref);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+	private void editEntry(AppPreference pref) {
+
+        String pkg = pref.getPkgName();
+        boolean disabled = !pref.isChecked();
+        Drawable icon = pref.getIcon();
+        if (pref.isChecked()) {
+            icon.setColorFilter(null);
+        } else {
+            icon.setColorFilter(mGrayscaleFilter);
+        }
 		ArrayList<String> newlist = new ArrayList<String>(mBlackListEntries);
 		boolean isblacklisted = newlist.contains(pkg);
-		if (enabled && isblacklisted) {
+		if (disabled && isblacklisted) {
 			return;
-		} else if (enabled) {
+		} else if (disabled) {
 			newlist.add(pkg);
-		} else if (!enabled && !isblacklisted){
+		} else if (!disabled && !isblacklisted){
 			return;
-		} else if (!enabled) {
+		} else if (!disabled) {
 			newlist.remove(pkg);
 		}
 		mBlackListEntries = new HashSet<String>(newlist);
@@ -113,19 +146,14 @@ public class ApplicationFilterFragment extends PreferenceFragment {
         editor.putStringSet(getString(R.string.pref_blocked_applist), mBlackListEntries);
         editor.apply();
 	}
-	
-	public boolean onPreferenceTreeClicked(PreferenceScreen preferenceScreen, final Preference preference) {
+
+    @Override
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, final Preference preference) {
         if (!isAdded()) {
             return false;
         }
 		AppPreference pref = (AppPreference) preference;
-		editEntry(pref.getPkgName(), !pref.isChecked());
-		Drawable icon = pref.getIcon();
-		if (pref.isChecked()) {
-			icon.setColorFilter(null);
-		} else {
-			icon.setColorFilter(mGrayscaleFilter);
-		}
+		editEntry(pref);
 		return true;
 	}    
 }
