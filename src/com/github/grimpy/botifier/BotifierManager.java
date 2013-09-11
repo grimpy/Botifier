@@ -110,6 +110,9 @@ public class BotifierManager implements OnInitListener {
 	            }
         	} else if (intent.getAction().equals(CMD_NOTIFICATION_ADDED)) {
                 Botification bot = intent.getParcelableExtra("botification");
+                if (isBlackListed(bot)) {
+                    return;
+                }
                 bot.load(mService);
                 speakBotification(bot);
                 if (!isActive()) {
