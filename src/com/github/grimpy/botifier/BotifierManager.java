@@ -140,7 +140,7 @@ public class BotifierManager implements OnInitListener {
     	removeNotification(old);
     } 	
     private void removeNotification(Botification old) {
-    	
+        mTTS.stop();
     	((NotificationInterface)mService).cancelNotification(old);
         for (Botification bot: mNotifications) {
             if (bot.equals(old)){
@@ -201,6 +201,7 @@ public class BotifierManager implements OnInitListener {
     
     private void resetNotify(boolean close) {
         if (close) {
+            mTTS.stop();
         	if (mRemoteControlClient != null) {
         		mRemoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
         		mAudioManager.unregisterRemoteControlClient(mRemoteControlClient);
