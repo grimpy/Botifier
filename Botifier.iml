@@ -6,8 +6,9 @@
         <option name="SELECTED_BUILD_VARIANT" value="Debug" />
         <option name="ASSEMBLE_TASK_NAME" value="assembleDebug" />
         <option name="ASSEMBLE_TEST_TASK_NAME" value="assembleTest" />
-        <option name="SOURCE_GEN_TASK_NAME" value="TODO" />
+        <option name="SOURCE_GEN_TASK_NAME" value="generateDebugSources" />
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
+        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/res" />
       </configuration>
     </facet>
     <facet type="android-gradle" name="Android-Gradle">
@@ -57,7 +58,6 @@
       <excludeFolder url="file://$MODULE_DIR$/build/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/dependency-cache" />
-      <excludeFolder url="file://$MODULE_DIR$/build/exploded-bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/libs" />
       <excludeFolder url="file://$MODULE_DIR$/build/manifests" />

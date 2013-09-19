@@ -23,6 +23,8 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
+import android.telephony.ServiceState;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -39,6 +41,7 @@ public class BotifierManager implements OnInitListener {
 	private SharedPreferences mSharedPref;
 	private RemoteControlClient mRemoteControlClient;
 	private AudioManager mAudioManager;
+    private TelephonyManager mTelephonyManager;
 	private int HANDLER_WHAT_CLEAR = 1;
 
 	private ComponentName mMediaButtonReceiverComponent;
@@ -55,8 +58,9 @@ public class BotifierManager implements OnInitListener {
         mMediaButtonReceiverComponent = new ComponentName(mService.getPackageName(), MediaButtonIntentReceiver.class.getName());
     	mAudioManager.registerMediaButtonEventReceiver(mMediaButtonReceiverComponent);		
 		mNotifications = new ArrayList<Botification>();
+        mTelephonyManager = (TelephonyManager) mService.getSystemService(Context.TELEPHONY_SERVICE);
 		mTTS = new TextToSpeech(mService, this);
-		
+
         final IntentFilter filter = new IntentFilter();
         filter.addAction(SERVICECMD);
         filter.addAction(NOTIFICATION);
@@ -220,6 +224,7 @@ public class BotifierManager implements OnInitListener {
 
     private void speakBotification(Botification bot){
         if (mSharedPref.getBoolean(_(R.string.pref_tts_enabled), false) &&
+                mTelephonyManager.getCallState() == TelephonyManager.CALL_STATE_IDLE &&
                 (mAudioManager.isBluetoothA2dpOn() || !mSharedPref.getBoolean(_(R.string.pref_tts_bt_only), true))) {
             String txt = bot.getPreference(_(R.string.pref_tts_value), true);
             mTTS.speak(txt, TextToSpeech.QUEUE_FLUSH, null);
