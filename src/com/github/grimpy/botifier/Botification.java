@@ -145,10 +145,10 @@ class Botification implements Parcelable {
 	public boolean equals(Object o) {
 		if (Botification.class.isInstance(o)) {
 			Botification not = (Botification) o;
-            if (!(mTag == not.mTag || (mTag != null && mTag.equals(not.mTag)))) {
+            if (!TextUtils.equals(mTag, not.mTag)) {
                 return false;
             }
-            if (!(mPkg == not.mPkg || (mPkg != null && mPkg.equals(not.mPkg)))) {
+            if (!TextUtils.equals(mPkg, not.mPkg)) {
                 return false;
             }
             if (mId != not.mId) {
