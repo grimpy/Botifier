@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="@string/notification_plugins">
+    <com.github.grimpy.botifier.preference.PreferenceSwitch android:title="@string/metadata_display" android:key="@string/pref_avrcp_enable"/>
+    <com.github.grimpy.botifier.preference.PreferenceSwitch android:title="@string/category_tts" android:key="@string/pref_tts_enabled"/>
+    <com.github.grimpy.botifier.preference.PreferenceSwitch android:title="@string/sw2_long" android:key="@string/pref_sw_enable"/>
+</PreferenceScreen>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference android:numeric="integer"
+        android:key="@string/pref_timeout"
+        android:dialogTitle="@string/timeout"
+        android:summary="@string/timeout_desc"
+        android:title="@string/timeout"/>
+    <ListPreference android:entries="@array/metadata_fields"
+        android:key="@string/pref_metadata_artist"
+        android:entryValues="@array/metadata_fields_values"
+        android:defaultValue="%a"
+        android:dialogTitle="@string/metadata_artist" android:title="@string/metadata_artist"/>
+    <ListPreference android:entries="@array/metadata_fields"
+        android:key="@string/pref_metadata_album"
+        android:entryValues="@array/metadata_fields_values"
+        android:defaultValue="%d"
+        android:dialogTitle="@string/metadata_album" android:title="@string/metadata_album"/>
+    <ListPreference android:entries="@array/metadata_fields"
+        android:key="@string/pref_metadata_title"
+        android:entryValues="@array/metadata_fields_values"
+        android:defaultValue="%m"
+        android:dialogTitle="@string/metadata_title" android:title="@string/metadata_title"/>
+    <EditTextPreference android:numeric="integer"
+        android:key="@string/pref_maxlength"
+        android:dialogTitle="@string/maxlength"
+        android:summary="@string/maxlength_desc"
+        android:title="@string/maxlength"/>
+    <CheckBoxPreference android:title="@string/bt_only"
+        android:key="@string/pref_metadata_bt_only"
+        android:summary="@string/bt_only_desc_meta"
+        android:defaultValue="true" />
+
+</PreferenceScreen>

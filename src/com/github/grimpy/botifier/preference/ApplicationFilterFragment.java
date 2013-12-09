@@ -1,4 +1,4 @@
-package com.github.grimpy.botifier;
+package com.github.grimpy.botifier.preference;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +26,8 @@ import android.graphics.drawable.Drawable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import com.github.grimpy.botifier.R;
 
 public class ApplicationFilterFragment extends PreferenceFragment {
 	private SharedPreferences mSharedPref;

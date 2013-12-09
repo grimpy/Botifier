@@ -9,7 +9,7 @@
  * governing permissions and limitations under the License.
  */
 
-package com.github.grimpy.botifier;
+package com.github.grimpy.botifier.plugins.avrcp;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,6 +19,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
+
+import com.github.grimpy.botifier.plugins.avrcp.AvrcpService;
 
 /**
  * Used to control headset playback. Single press: pause/resume. Double press:
@@ -77,8 +79,8 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
 
             if (KeyEvent.ACTION_UP == action) {
 	            final Intent i = new Intent();
-	            i.setAction(BotifierManager.SERVICECMD);
-	            i.putExtra(BotifierManager.SERVICECMD, keycode);
+	            i.setAction(AvrcpService.SERVICECMD);
+	            i.putExtra(AvrcpService.SERVICECMD, keycode);
 	            context.sendBroadcast(i);
             }
             

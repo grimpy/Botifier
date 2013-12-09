@@ -1,4 +1,4 @@
-package com.github.grimpy.botifier;
+package com.github.grimpy.botifier.receivers;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
@@ -7,7 +7,10 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
-public class BotifierAccessibilityService extends AccessibilityService implements NotificationInterface {
+import com.github.grimpy.botifier.Botification;
+import com.github.grimpy.botifier.NotificationEvents;
+
+public class BotifierAccessibilityService extends AccessibilityService {
 
 	@Override
 	protected void onServiceConnected() {
@@ -19,20 +22,16 @@ public class BotifierAccessibilityService extends AccessibilityService implement
 	}
 
 	private static String TAG = "Botifier";
-	private BotifierManager mBotifyManager; 
 
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		Log.i(TAG, "Manager started");
-		mBotifyManager = new BotifierManager(this);
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mBotifyManager.destroy();
 	}
 	
 	
@@ -44,6 +43,10 @@ public class BotifierAccessibilityService extends AccessibilityService implement
 		}
 		String text = Botification.extractTextFromNotification(this, not);
 		Botification bot = new Botification(0, event.getPackageName().toString(), "", description, text);
+		bot.load(this);
+        if (bot.isBlackListed() || !bot.isIntresting(not)) {
+		    return;
+		}
 		i.putExtra("botification", bot);
 		sendBroadcast(i);		
 	}
@@ -52,10 +55,10 @@ public class BotifierAccessibilityService extends AccessibilityService implement
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		if (event.getEventType() == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED) {
 			Notification notification = (Notification) event.getParcelableData();
-			if (notification == null || !mBotifyManager.isIntresting(notification)) {
+			if (notification == null ) {
 	        	return;
 	        }
-			sendCmd(event, notification, BotifierManager.CMD_NOTIFICATION_ADDED);
+			sendCmd(event, notification, NotificationEvents.NOTIFICATION_ADDED);
 	      }
     } 
 
@@ -64,9 +67,4 @@ public class BotifierAccessibilityService extends AccessibilityService implement
 		// TODO Auto-generated method stub	
 	}
 
-	@Override
-	public void cancelNotification(Botification not) {
-		// TODO Auto-generated method stub
-		
-	}
 }

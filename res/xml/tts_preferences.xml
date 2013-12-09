@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference android:entries="@array/metadata_fields"
+        android:key="@string/pref_tts_value"
+        android:entryValues="@array/metadata_fields_values"
+        android:defaultValue="%m"
+        android:dialogTitle="@string/tts_value" android:title="@string/tts_value"/>
+    <CheckBoxPreference android:title="@string/bt_only"
+        android:key="@string/pref_tts_bt_only"
+        android:summary="@string/bt_only_desc_tts"
+        android:defaultValue="true" />
+</PreferenceScreen>

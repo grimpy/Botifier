@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <PreferenceCategory android:title="@string/general">
-        <Preference android:title="@string/notification_plugins"
-                    android:key="@string/pref_plugins"/>
+        <Preference android:title="Notifcation Types" android:key="notification_types">
+        </Preference>
+
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/filters">
         <CheckBoxPreference android:title="@string/persistent_notification"
@@ -18,5 +19,7 @@
         <Preference android:title="@string/makenotification"
           		android:key="@string/action_makenotification"
         />
+        
     </PreferenceCategory>
+    
 </PreferenceScreen>

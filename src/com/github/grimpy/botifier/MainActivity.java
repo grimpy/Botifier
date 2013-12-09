@@ -1,8 +1,9 @@
 package com.github.grimpy.botifier;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
+
+import com.github.grimpy.botifier.preference.SettingsFragment;
 
 public class MainActivity extends Activity {
 
@@ -13,6 +14,5 @@ public class MainActivity extends Activity {
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
-        startService(new Intent(this, BotifierManager.class));
-    }       
+    }
 }

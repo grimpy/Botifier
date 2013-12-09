@@ -1,12 +1,8 @@
-package com.github.grimpy.botifier;
+package com.github.grimpy.botifier.plugins.avrcp;
 
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.regex.Pattern;
 
-import android.app.Notification;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,71 +15,60 @@ import android.media.RemoteControlClient;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.RemoteControlClient.MetadataEditor;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.speech.tts.TextToSpeech;
-import android.speech.tts.TextToSpeech.OnInitListener;
-import android.telephony.ServiceState;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import com.github.grimpy.botifier.plugins.AbstractPlugin;
+import com.github.grimpy.botifier.Botification;
+import com.github.grimpy.botifier.R;
 
-public class BotifierManager implements OnInitListener {
 
-	public static final String SERVICECMD = "com.github.grimpy.botifier.cmd";
-	public static final String NOTIFICATION = "com.github.grimpy.botifier.notification";
-	public static final String CMD_NOTIFICATION_ADDED = "com.github.grimpy.botifier.notification.added";
-	public static final String CMD_NOTIFICATION_REMOVED = "com.github.grimpy.botifier.notification.removed"; 
-	
+public class AvrcpService extends AbstractPlugin {
+
+    public static final String SERVICECMD = "com.github.grimpy.botifier.cmd";
+    public static final String NOTIFICATION = "com.github.grimpy.botifier.notification";
+
 	private static String TAG = "Botifier";
 	private SharedPreferences mSharedPref;
-	private RemoteControlClient mRemoteControlClient;
-	private AudioManager mAudioManager;
     private TelephonyManager mTelephonyManager;
+    private AudioManager mAudioManager;
+	private RemoteControlClient mRemoteControlClient;
 	private int HANDLER_WHAT_CLEAR = 1;
 
 	private ComponentName mMediaButtonReceiverComponent;
 	private ArrayList<Botification> mNotifications;
-	private int mCurrent = -1;
+
+
+    private int mCurrent = -1;
 	private int mAudiofocus = -1;
-	private TextToSpeech mTTS;
-	private Service mService;
 	private Handler mHandler;
 
-    public BotifierManager(Service serv) {
-    	mService = serv;
-        mAudioManager = (AudioManager) mService.getSystemService(Context.AUDIO_SERVICE);
-        mMediaButtonReceiverComponent = new ComponentName(mService.getPackageName(), MediaButtonIntentReceiver.class.getName());
-    	mAudioManager.registerMediaButtonEventReceiver(mMediaButtonReceiverComponent);		
-		mNotifications = new ArrayList<Botification>();
-        mTelephonyManager = (TelephonyManager) mService.getSystemService(Context.TELEPHONY_SERVICE);
-		mTTS = new TextToSpeech(mService, this);
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        mMediaButtonReceiverComponent = new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName());
+        mAudioManager.registerMediaButtonEventReceiver(mMediaButtonReceiverComponent);
+        mNotifications = new ArrayList<Botification>();
 
         final IntentFilter filter = new IntentFilter();
         filter.addAction(SERVICECMD);
         filter.addAction(NOTIFICATION);
-        filter.addAction(CMD_NOTIFICATION_ADDED);
-        filter.addAction(CMD_NOTIFICATION_REMOVED);
         // Attach the broadcast listener
-        mService.registerReceiver(mIntentReceiver, filter);
-        mSharedPref = PreferenceManager.getDefaultSharedPreferences(mService);
+        registerReceiver(mIntentReceiver, filter);
+        mSharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         mHandler = new Handler(){
-	    	public void handleMessage(Message msg){
-	    		resetNotify(true);
-		    }       
-		};
-	}
-
-
-    public boolean isIntresting(Notification not) {
-    	boolean isongoing = (not.flags & Notification.FLAG_ONGOING_EVENT) != 0;
-    	boolean wantongoing = mSharedPref.getBoolean(_(R.string.pref_persistent_notification), false);
-    	return (wantongoing || !isongoing);
+            public void handleMessage(Message msg){
+                resetNotify(true);
+            }
+        };
     }
-		
-	
+
     private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         /**
          * {@inheritDoc}
@@ -112,24 +97,10 @@ public class BotifierManager implements OnInitListener {
 		            	showNotify(-1);
 		                break;
 	            }
-        	} else if (intent.getAction().equals(CMD_NOTIFICATION_ADDED)) {
-                Botification bot = intent.getParcelableExtra("botification");
-                if (isBlackListed(bot)) {
-                    return;
-                }
-                bot.load(mService);
-                speakBotification(bot);
-                if (!isActive()) {
-                    return;
-                }
-        		notificationAdded(bot);
-        	} else if (intent.getAction().equals(CMD_NOTIFICATION_REMOVED)) {
-        		Botification not_todelete = intent.getParcelableExtra("botification");
-				removeNotification(not_todelete);
         	}
         }
     };
-    
+
     private boolean isActive() {
     	return mAudioManager.isBluetoothA2dpOn() || !mSharedPref.getBoolean(_(R.string.pref_metadata_bt_only), true);
     }
@@ -144,8 +115,7 @@ public class BotifierManager implements OnInitListener {
     	removeNotification(old);
     } 	
     private void removeNotification(Botification old) {
-        mTTS.stop();
-    	((NotificationInterface)mService).cancelNotification(old);
+    	//((NotificationInterface)this).cancelNotification(old);
         for (Botification bot: mNotifications) {
             if (bot.equals(old)){
                 Log.d(TAG, "Notification found and remove");
@@ -169,7 +139,7 @@ public class BotifierManager implements OnInitListener {
     }
     
 	private int getTimeout() {
-		String timeout = mSharedPref.getString(mService.getString(R.string.pref_timeout), "");
+		String timeout = mSharedPref.getString(_(R.string.pref_timeout), "");
 		if (!TextUtils.isEmpty(timeout)){
 			return Integer.valueOf(timeout);
 		}
@@ -205,7 +175,6 @@ public class BotifierManager implements OnInitListener {
     
     private void resetNotify(boolean close) {
         if (close) {
-            mTTS.stop();
         	if (mRemoteControlClient != null) {
         		mRemoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
         		mAudioManager.unregisterRemoteControlClient(mRemoteControlClient);
@@ -217,20 +186,9 @@ public class BotifierManager implements OnInitListener {
         }
     }
 
-    private String _(int id){
-        return mService.getString(id);
-    }
 
 
-    private void speakBotification(Botification bot){
-        if (mSharedPref.getBoolean(_(R.string.pref_tts_enabled), false) &&
-                mTelephonyManager.getCallState() == TelephonyManager.CALL_STATE_IDLE &&
-                (mAudioManager.isBluetoothA2dpOn() || !mSharedPref.getBoolean(_(R.string.pref_tts_bt_only), true))) {
-            String txt = bot.getPreference(_(R.string.pref_tts_value), true);
-            mTTS.speak(txt, TextToSpeech.QUEUE_FLUSH, null);
-        }
-    }
-	
+
 	public void showNotify(Botification notify) {
 		Log.d(TAG, "Setting notification " + notify.toString());
 		mCurrent = mNotifications.indexOf(notify);
@@ -259,12 +217,12 @@ public class BotifierManager implements OnInitListener {
 	}
 	
     private void setUpRemoteControlClient() {
-        mMediaButtonReceiverComponent = new ComponentName(mService.getPackageName(), MediaButtonIntentReceiver.class.getName());
+        mMediaButtonReceiverComponent = new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName());
     	mAudioManager.registerMediaButtonEventReceiver(mMediaButtonReceiverComponent);
         final Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
         mediaButtonIntent.setComponent(mMediaButtonReceiverComponent);
         mRemoteControlClient = new RemoteControlClient(
-                PendingIntent.getBroadcast(mService.getApplicationContext(), 0, mediaButtonIntent,
+                PendingIntent.getBroadcast(getApplicationContext(), 0, mediaButtonIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT));
         mAudioManager.registerRemoteControlClient(mRemoteControlClient);
 
@@ -293,32 +251,6 @@ public class BotifierManager implements OnInitListener {
         }
     };
     
-        
-    private boolean isBlackListed(Botification botification) {
-    	String txt = botification.mText;
-    	Set<String> blacklist = mSharedPref.getStringSet(_(R.string.pref_blacklist), null);
-    	if (blacklist != null) {
-    		for (String entry : blacklist) {
-    			entry = entry.replace(".", "\\.").replace("*", ".*");
-    			Pattern pat = Pattern.compile(entry, Pattern.DOTALL);
-				if (pat.matcher(txt).matches()) {
-					Log.d(TAG, txt + " matches " + entry);
-					return true;
-				}
-			}
-    	}
-    	Set<String> appblacklist = mSharedPref.getStringSet(_(R.string.pref_blocked_applist), null);
-    	if (appblacklist != null) {
-    		for (String entry : appblacklist) {
-    			if (entry.equals(botification.mPkg)) {
-    				return true;
-    			}
-			}
-    	}
-    	
-    	return false;
-    }
-    
 	private void addNotification(Botification notification) {
 		for (int i = 0; i < mNotifications.size(); i++) {
 			Botification not = mNotifications.get(i);
@@ -332,23 +264,24 @@ public class BotifierManager implements OnInitListener {
 	}
 	
 	public void destroy() {
-		Log.d(TAG, "Service interrupted");
+		Log.d(TAG, "AvrcpService interrupted");
 		mAudiofocus = -1;
 		mAudioManager.abandonAudioFocus(mAudioFocusListener);
 	}
 	
 	public void notificationAdded(Botification notification) {
-		if (isBlackListed(notification)) {
-			return;
-		}
         addNotification(notification);
         showNotify(notification);
 	}
 
-	@Override
-	public void onInit(int status) {
-		// is part of TTS listener
-		
-	}
-	
+    @Override
+    public void notificationRemoved(Botification not) {
+        removeNotification(not);
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
 }

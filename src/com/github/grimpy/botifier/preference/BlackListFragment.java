@@ -1,4 +1,4 @@
-package com.github.grimpy.botifier;
+package com.github.grimpy.botifier.preference;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,6 +20,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
+
+import com.github.grimpy.botifier.R;
 
 public class BlackListFragment extends PreferenceFragment {
 	private SharedPreferences mSharedPref;

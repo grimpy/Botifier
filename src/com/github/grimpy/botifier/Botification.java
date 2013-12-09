@@ -1,6 +1,9 @@
 package com.github.grimpy.botifier;
 
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
@@ -21,7 +24,7 @@ import android.widget.RemoteViews;
 import android.widget.TextView;
 
 
-class Botification implements Parcelable {
+public class Botification implements Parcelable {
 	private Service mService;
 	public String mPackageLabel;
 	public String mDescription;
@@ -63,7 +66,6 @@ class Botification implements Parcelable {
 		dest.writeString(mText);
 	}
 	
-	
 	public Botification(int id, String pkg, String tag, String description, String text) {
 		mId = id;
 		mPkg = pkg;
@@ -101,6 +103,46 @@ class Botification implements Parcelable {
 		return 0;
 	}
 	
+    private String _(int id){
+        return mService.getString(id);
+    }
+	
+    public boolean isBlackListed() {
+        String txt = mText;
+        Set<String> blacklist = mSharedPref.getStringSet(_(R.string.pref_blacklist), null);
+        if (blacklist != null) {
+            for (String entry : blacklist) {
+                entry = entry.replace(".", "\\.").replace("*", ".*");
+                Pattern pat = Pattern.compile(entry, Pattern.DOTALL);
+                if (pat.matcher(txt).matches()) {
+                    Log.d(TAG, txt + " matches " + entry);
+                    return true;
+                }
+            }
+        }
+        Set<String> appblacklist = mSharedPref.getStringSet(_(R.string.pref_blocked_applist), null);
+        if (appblacklist != null) {
+            for (String entry : appblacklist) {
+                if (entry.equals(mPkg)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+
+
+    public String getID(){
+        return String.format("%s.%s", mPkg, mId);
+    }
+
+    public boolean isIntresting(Notification not) {
+        boolean isongoing = (not.flags & Notification.FLAG_ONGOING_EVENT) != 0;
+        boolean wantongoing = mSharedPref.getBoolean(_(R.string.pref_persistent_notification), false);
+        return (wantongoing || !isongoing);
+    }
+
 	public boolean hasNext() {
 		int maxlength = getMaxLength();
 		if (maxlength == 0) {

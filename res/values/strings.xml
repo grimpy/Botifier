@@ -59,4 +59,15 @@
         <item >custom</item> 
    </string-array>
 
+
+    <!-- preference -->
+    <string name="notification_plugins">Notification Plugins</string>
+    <string name="device_display">Device Display</string>
+
+   <!-- Smart watch stuf -->
+   <string name="extension_name">Botifier</string>
+   <string name="configuration_text">What is this</string>
+   <string name="sw2_long">Sony Smartwatch 2</string>
+   <string name="clear_all">Clear All</string>
+
 </resources>

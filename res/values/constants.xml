@@ -5,7 +5,8 @@
 	<string name="pref_tts_enabled">action_tts</string>
 	<string name="pref_tts_value">tts_value</string>
 	<string name="pref_tts_bt_only">tts_bt_only</string>
-	
+
+    <string name="pref_avrcp_enable">avrcp_enable</string>
 	<string name="pref_metadata_artist">metadata_artist</string>
 	<string name="pref_metadata_album">metadata_album</string>
 	<string name="pref_metadata_title">metadata_title</string>
@@ -18,6 +19,11 @@
 	
 	<string name="pref_blocked_applist">blockedapplist</string>
 	<string name="pref_blacklist">blacklistentries</string>
-	
+
+    <string name="pref_plugins">pref_plugins</string>
+
+    <string name="pref_sw_clear">pref_sw_clear</string>
+    <string name="pref_sw_enable">sw_enable</string>
+
 	<string name="cat_filterlist">filterlist</string>
 </resources>
