@@ -69,5 +69,6 @@
    <string name="configuration_text">What is this</string>
    <string name="sw2_long">Sony Smartwatch 2</string>
    <string name="clear_all">Clear All</string>
+   <string name="title_sw_keep_cleared">Keep removed notifications</string>
 
 </resources>

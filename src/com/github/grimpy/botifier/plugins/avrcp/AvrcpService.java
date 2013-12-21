@@ -31,7 +31,6 @@ import com.github.grimpy.botifier.R;
 public class AvrcpService extends AbstractPlugin {
 
     public static final String SERVICECMD = "com.github.grimpy.botifier.cmd";
-    public static final String NOTIFICATION = "com.github.grimpy.botifier.notification";
 
 	private static String TAG = "Botifier";
 	private SharedPreferences mSharedPref;
@@ -58,7 +57,6 @@ public class AvrcpService extends AbstractPlugin {
 
         final IntentFilter filter = new IntentFilter();
         filter.addAction(SERVICECMD);
-        filter.addAction(NOTIFICATION);
         // Attach the broadcast listener
         registerReceiver(mIntentReceiver, filter);
         mSharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -115,7 +113,7 @@ public class AvrcpService extends AbstractPlugin {
     	removeNotification(old);
     } 	
     private void removeNotification(Botification old) {
-    	//((NotificationInterface)this).cancelNotification(old);
+        super.removeNotifcation(old);
         for (Botification bot: mNotifications) {
             if (bot.equals(old)){
                 Log.d(TAG, "Notification found and remove");

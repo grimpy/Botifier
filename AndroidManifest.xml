@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.grimpy.botifier"
-    android:versionCode="14"
-    android:versionName="1.3.2" >
+    android:versionCode="15"
+    android:versionName="1.4.0" >
 
     <uses-sdk
-        android:minSdkVersion="17"
+        android:minSdkVersion="14"
         android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
@@ -47,6 +47,7 @@
         </service>
         
         <service android:name=".plugins.liveware.SWExtensionService" />
+        <service android:name=".plugins.avrcp.AvrcpService" />
         <service android:name=".plugins.tts.TTSService"/>
         
         <receiver android:name=".plugins.liveware.SWExtensionReceiver">

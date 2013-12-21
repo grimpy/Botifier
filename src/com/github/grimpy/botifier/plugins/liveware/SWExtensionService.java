@@ -14,8 +14,11 @@ import android.database.SQLException;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
+import com.github.grimpy.botifier.R;
+import com.github.grimpy.botifier.receivers.BotifierNotificationService;
 import com.sonyericsson.extras.liveware.aef.notification.Notification;
 import com.sonyericsson.extras.liveware.aef.registration.Registration;
 import com.sonyericsson.extras.liveware.extension.util.ExtensionService;
@@ -98,11 +101,25 @@ public class SWExtensionService extends ExtensionService {
     private void clearData() {
         NotificationUtil.deleteAllEvents(this);
     }
-    
 
     private void removeData(Botification bot) {
+
+        SharedPreferences mSharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String where = Notification.EventColumns.FRIEND_KEY + "='" + bot.getID() + "'";
-        getContentResolver().delete(Notification.Event.URI, where ,null);
+        if (mSharedPref.getBoolean(getString(R.string.pref_sw_keep), false)) {
+            ContentValues cv = new ContentValues();
+            cv.put(Notification.EventColumns.EVENT_READ_STATUS, true);
+            getContentResolver().update(Notification.Event.URI, cv, where, null);
+        } else {
+            getContentResolver().delete(Notification.Event.URI, where ,null);
+        }
+    }
+
+    protected void removeNotifcation(Botification bot){
+        Intent intent = new Intent();
+        intent.setAction(BotifierNotificationService.REMOVE_NOTIFICATION);
+        intent.putExtra("botification", bot);
+        sendBroadcast(intent);
     }
 
     private void addData(Botification bot) {

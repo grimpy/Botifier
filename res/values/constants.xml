@@ -24,6 +24,7 @@
 
     <string name="pref_sw_clear">pref_sw_clear</string>
     <string name="pref_sw_enable">sw_enable</string>
+    <string name="pref_sw_keep">sw_keep</string>
 
 	<string name="cat_filterlist">filterlist</string>
 </resources>

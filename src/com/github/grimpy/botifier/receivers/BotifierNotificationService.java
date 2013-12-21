@@ -3,7 +3,10 @@ package com.github.grimpy.botifier.receivers;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Message;
 import android.service.notification.NotificationListenerService;
@@ -16,13 +19,33 @@ import com.github.grimpy.botifier.NotificationEvents;
 @TargetApi(18)
 public class BotifierNotificationService extends NotificationListenerService{
 	private static String TAG = "Botifier";
+    public static String REMOVE_NOTIFICATION = "com.github.grimpy.botifier.REMOVE_NOTIFICATION";
 	private Handler mHandler;
+
+
+    private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            Log.d(TAG, "Received action " + intent.getAction());
+            if (intent.getAction().equals(NOTIFICATION_SERVICE) ) {
+                Botification bot = intent.getParcelableExtra("botification");
+                cancelNotification(bot);
+            }
+        }
+    };
 
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		Log.i(TAG, "Manager started");
+        final IntentFilter filter = new IntentFilter();
+        filter.addAction(REMOVE_NOTIFICATION);
+        // Attach the broadcast listener
+        registerReceiver(mIntentReceiver, filter);
 	    mHandler = new Handler(){
 	    	public void handleMessage(Message msg){
 	    		String cmd = NotificationEvents.NOTIFICATION_ADDED;

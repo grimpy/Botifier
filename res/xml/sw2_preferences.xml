@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <Preference android:title="@string/clear_all" android:key="@string/pref_sw_clear"></Preference>
+    <CheckBoxPreference android:title="@string/title_sw_keep_cleared"
+        android:key="@string/pref_sw_keep"
+        android:defaultValue="false"/>
 </PreferenceScreen>

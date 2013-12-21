@@ -5,6 +5,7 @@ import android.content.Intent;
 import com.github.grimpy.botifier.Botification;
 import com.github.grimpy.botifier.NotificationEvents;
 import com.github.grimpy.botifier.NotificationInterface;
+import com.github.grimpy.botifier.receivers.BotifierNotificationService;
 
 public abstract class AbstractPlugin extends Service implements NotificationInterface {
 
@@ -23,5 +24,12 @@ public abstract class AbstractPlugin extends Service implements NotificationInte
 
     protected String _(int id){
         return getString(id);
+    }
+
+    protected void removeNotifcation(Botification bot){
+        Intent intent = new Intent();
+        intent.setAction(BotifierNotificationService.REMOVE_NOTIFICATION);
+        intent.putExtra("botification", bot);
+        sendBroadcast(intent);
     }
 }
