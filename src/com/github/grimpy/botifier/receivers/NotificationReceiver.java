@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.github.grimpy.botifier.R;
+import com.github.grimpy.botifier.plugins.avrcp.AvrcpService;
 import com.github.grimpy.botifier.plugins.tts.TTSService;
 
 import com.github.grimpy.botifier.plugins.liveware.SWExtensionService;
@@ -30,7 +31,9 @@ public class NotificationReceiver extends BroadcastReceiver {
             context.startService(sw);
         }
         if (prefs.getBoolean(context.getString(R.string.pref_avrcp_enable), false)) {
-
+            Intent avrcp = new Intent(intent);
+            avrcp.setClass(context, AvrcpService.class);
+            context.startService(avrcp);
         }
     }
 }

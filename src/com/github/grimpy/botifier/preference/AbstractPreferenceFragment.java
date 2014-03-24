@@ -23,9 +23,11 @@ abstract public class AbstractPreferenceFragment extends PreferenceFragment impl
     protected void setSummary(String prefkey, String value) {
         Preference pref = findPreference(prefkey);
         mPrefCache.put(prefkey, value);
-        int idx = mValues.indexOf(value);
-        if (idx >= 0) {
-            value = mFields.get(idx);
+        if (mValues != null) {
+            int idx = mValues.indexOf(value);
+            if (idx >= 0) {
+                value = mFields.get(idx);
+            }
         }
         if (pref != null) {
             pref.setSummary(value.replace("%", "%%"));
