@@ -3,9 +3,11 @@ package com.github.grimpy.botifier.preference;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -62,6 +64,14 @@ public class SettingsFragment extends AbstractPreferenceFragment implements OnSh
                 getFragmentManager().beginTransaction()
                         .replace(android.R.id.content, new PluginPreference()).addToBackStack(null)
                         .commit();
+            } else if (prefkey.equals(getString(R.string.pref_open_access))) {
+                String action;
+                if (Build.VERSION.SDK_INT >= 18) {
+                    action = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
+                } else {
+                    action = Settings.ACTION_ACCESSIBILITY_SETTINGS;
+                }
+                startActivity(new Intent(action));
             }
         }
 

@@ -21,6 +21,7 @@
 	<string name="pref_blacklist">blacklistentries</string>
 
     <string name="pref_plugins">pref_plugins</string>
+    <string name="pref_open_access">pref_open_access</string>
 
     <string name="pref_sw_clear">pref_sw_clear</string>
     <string name="pref_sw_enable">sw_enable</string>

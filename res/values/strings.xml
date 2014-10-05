@@ -35,6 +35,8 @@
     <string name="maxlength">Max Length</string>
     <string name="maxlength_desc">Maximum length of text displayed</string>
     <string name="debug">Debug</string>
+    <string name="open_settings">Give Botifier Access</string>
+    <string name="open_settings_descr">Open SystemSettings to allow Botifier to receive notifications</string>
     <string name="makenotification">Test Notification</string>
     <string name="custom_title">Enter custom text</string>
     <string name="custom_description">Usage:\n\n

@@ -3,6 +3,10 @@
     <PreferenceCategory android:title="@string/general">
         <Preference android:title="@string/notification_plugins"
                     android:key="@string/pref_plugins"/>
+        <Preference android:title="@string/open_settings"
+            android:key="@string/pref_open_access"
+            android:summary="@string/open_settings_descr"
+            />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/filters">
         <CheckBoxPreference android:title="@string/persistent_notification"
