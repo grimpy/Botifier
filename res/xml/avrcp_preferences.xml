@@ -2,6 +2,8 @@
 
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference android:title="@string/enable_disable"
+        android:key="@string/pref_avrcp_enable"/>
     <EditTextPreference android:numeric="integer"
         android:key="@string/pref_timeout"
         android:dialogTitle="@string/timeout"

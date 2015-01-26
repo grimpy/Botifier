@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="enable_disable">Enable/Disable</string>
     <string name="select_all">Select All</string>
     <string name="select_none">Select None</string>
     <string name="app_name">Botifier</string>

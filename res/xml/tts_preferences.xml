@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference android:title="@string/enable_disable"
+        android:key="@string/pref_tts_enabled"/>
+
     <ListPreference android:entries="@array/metadata_fields"
         android:key="@string/pref_tts_value"
         android:entryValues="@array/metadata_fields_values"
