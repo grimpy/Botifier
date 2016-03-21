@@ -55,7 +55,7 @@ public class ApplicationFilterFragment extends PreferenceFragment {
 	class ApplicationComparator implements Comparator<AppPreference> {
 	    @Override
 	    public int compare(AppPreference a, AppPreference b) {
-	        return a.getTitle().toString().compareTo(b.getTitle().toString());
+            	return a.getTitle().toString().toLowerCase().compareTo(b.getTitle().toString().toLowerCase());
 	    }
 	}
 	
